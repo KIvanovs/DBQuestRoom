@@ -28,7 +28,7 @@
 	$hashed_password = password_hash($password, PASSWORD_DEFAULT);
 	
 	// Insert data into database
-	$sql = "INSERT INTO users (user_name, email, password) VALUES ('$name', '$email', '$hashed_password')";
+	$sql = "INSERT INTO user (username, email, password) VALUES ('$name', '$email', '$hashed_password')";
 	
 	if ($conn->query($sql) === TRUE) {
 	  echo "New record created successfully";
