@@ -16,3 +16,11 @@ removal of an employee
 adding an employee
 customer info,
 info about workers
+searcher
+
+
+Working functions:
+search
+login(now fixed)
+register
+comments
