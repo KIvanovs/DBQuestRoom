@@ -1,6 +1,5 @@
 <?php
 
-
 // Database connection
 $dbhost = 'localhost';
 $dbname = 'testdb';
@@ -13,7 +12,8 @@ if (!$conn) {
 }
 
 // Query the database for comments
-$query = "SELECT comment.comment, users.nickname FROM comment JOIN users ON comment.user_id = users.ID";
+$query = "SELECT comment.id, comment.comment, users.nickname, comment.user_id FROM comment JOIN users ON comment.user_id = users.ID";
+
 $result = mysqli_query($conn, $query);
 
 // Check if any comments were found
@@ -21,8 +21,23 @@ if (mysqli_num_rows($result) > 0) {
 
 	// Display each comment
 	while ($row = mysqli_fetch_assoc($result)) {
-		echo "<p><strong>" . $row['nickname'] . ":</strong> " . $row['comment'] . "</p>";
-	}
+        echo "<p><strong>" . $row['nickname'] . ":</strong> " . $row['comment'];
+        
+        // Check if the user wrote the comment and add update and delete buttons
+        if (isset($_SESSION['user_id']) && $row['user_id'] == $_SESSION['user_id']) {
+            echo "<form method='post' action='delete_comment.php'>";
+            echo "<input type='hidden' name='comment_id' value='" . $row['id'] . "'>";
+            echo "<input type='submit' value='Delete'>";
+            echo "</form>";
+    
+            echo "<form method='post' action='update_comment.php'>";
+            echo "<input type='hidden' name='comment_id' value='" . $row['id'] . "'>";
+            echo "<input type='submit' value='Update'>";
+            echo "</form>";
+        }
+        
+        echo "</p>";
+    }
 
 } else {
 
