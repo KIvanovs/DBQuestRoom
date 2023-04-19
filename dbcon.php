@@ -9,7 +9,7 @@ $conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
 //process search query
 if(isset($_POST['keyword'])){
 	$keyword = $_POST['keyword'];
-	$query = "SELECT * FROM users WHERE user_name LIKE '%$keyword%'";
+	$query = "SELECT * FROM users WHERE nickname LIKE '%$keyword%'";
 	$result = mysqli_query($conn, $query);
 }
 

@@ -1,4 +1,5 @@
 <?php
+session_start();
 
     //connect to database
     $dbhost = 'localhost';
@@ -16,15 +17,12 @@
 
     // check if form is submitted
     if (isset($_POST['login'])) {
-        $username = $_POST['username'];
+        $email = $_POST['email'];
         $password = $_POST['password'];
-        $passcheck = password_verify($password, $row['password'])
-
+        $passcheck = password_verify($password, $row['password']);
     
-    
-
         // retrieve user data from database
-        $sql = "SELECT * FROM users WHERE user_name='$username'";
+        $sql = "SELECT * FROM users WHERE email='$email'";
         $result = $conn->query($sql);
 
         if ($result->num_rows == 1) {
@@ -32,21 +30,19 @@
             $row = $result->fetch_assoc();
             if (password_verify($password, $row['password'])) {
                 // login successful, redirect to dashboard
-                header("Location: index.php");
+			    $_SESSION['user_id'] = $row['ID'];
+			    $_SESSION['nickname'] = $row['nickname'];
+                header("Location: home.php");
                 exit();
             }
             else{
                 echo"Invalid  password. Please try again.";
             }
-            
-        echo"Invalid username . Please try again.";
-        
         }
-        
-        
+        else{
+            echo"Invalid username . Please try again.";
+        }
     }
-
-    
 
     // close database connection
     $conn->close();

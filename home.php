@@ -9,11 +9,15 @@
 	<header>
 		<nav>
 			<ul>
+				<li><a href="home.php">Home</a></li>
 				<li><a href="index.php">Search</a></li>
 				<li><a href="comment_form.php">Comments</a></li>
 				<li><a href="registerform.php">Register</a></li>
 				<li><a href="loginform.php">Login</a></li>
-				<li><a href="home.php">Login</a></li>
+				<form action="logout.php" method="post">
+    				<button type="submit" name="logout">Logout</button>
+				</form>
+				
 			</ul>
 		</nav>
 	</header>
@@ -64,14 +68,26 @@
 		<div class="card">
 			<div class="card-image">
 				<img src="photo/escape-room5.jpg" alt="placeholder image">
+				<div class="category">Horror</div>
 			</div>
 			<div class="card-content">
 				<h2>Psyho's room</h2>
 				<p>Text about this location</p>
-				<a href="#" class="btn">Read More</a>
+				<a href="psyho_room.php" class="btn">Read More</a>
 			</div>
 			
 		</div>
 	</div>
+	<?php
+	session_start(); // Start the session
+
+if(isset($_SESSION['user_id'])) {
+   // The user is currently in a session
+   echo "You are in session!";
+} else {
+   // The user is not currently in a session
+   echo "You are not in session!";
+}
+?>
 </body>
 </html>

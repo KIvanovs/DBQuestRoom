@@ -13,10 +13,15 @@
 	}
 	
 	// Get form data
+	$nickname = $_POST['nickname'];
 	$name = $_POST['name'];
+	$surname = $_POST['surname'];
 	$email = $_POST['email'];
 	$password = $_POST['password'];
 	$confirm_password = $_POST['confirm_password'];
+	$phone = $_POST['phone'];
+	
+
 	
 	// Check if password and confirm password match
 	if ($password !== $confirm_password) {
@@ -28,7 +33,7 @@
 	$hashed_password = password_hash($password, PASSWORD_DEFAULT);
 	
 	// Insert data into database
-	$sql = "INSERT INTO user (username, email, password) VALUES ('$name', '$email', '$hashed_password')";
+	$sql = "INSERT INTO users (nickname,  password, email, name, surname, phoneNumber) VALUES ('$nickname', '$hashed_password', '$email' ,'$name','$surname','$phone')";
 	
 	if ($conn->query($sql) === TRUE) {
 	  echo "New record created successfully";
