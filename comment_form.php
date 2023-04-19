@@ -18,17 +18,13 @@
 			</ul>
 		</nav>
 	</header>
-	<div class="comment-container">
-		<h2>Leave a Comment</h2>
-		<form action="process_comment.php" method="post">
-			<label for="name">Name:</label>
-			<input type="text" id="name" name="name" required>
-			<label for="email">Email:</label>
-			<input type="email" id="email" name="email" required>
-			<label for="comment">Comment:</label>
-			<textarea id="comment" name="comment" required></textarea>
-			<button type="submit">Submit</button>
-		</form>
+	<div class="comment-container">		
+		<h1>Add Comment</h1>
+	<form method="post" action="process_comment.php">
+		<label>Comment:</label>
+		<textarea name="comment" required></textarea><br><br>
+		<input type="submit" value="Add Comment">
+	</form>
 	</div>
 </body>
 </html>

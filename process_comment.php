@@ -1,24 +1,47 @@
 <?php
-//connect to database
+session_start();
+
+// Database connection
 $dbhost = 'localhost';
 $dbname = 'testdb';
 $dbuser = 'root';
 $dbpass = '';
 $conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
 
-//process comment form
-if(isset($_POST['name']) && isset($_POST['email']) && isset($_POST['comment'])){
-	$name = $_POST['name'];
-	$email = $_POST['email'];
-	$comment = $_POST['comment'];
-	$query = "INSERT INTO comment (name, email, comment) VALUES ('$name', '$email', '$comment')";
-	mysqli_query($conn, $query);
+if (!$conn) {
+	die("Connection failed: " . mysqli_connect_error());
 }
 
-//close database connection
-mysqli_close($conn);
+// Check if the user is logged in
+if (!isset($_SESSION['user_id'])) {
+	header("Location: login.php");
+	exit();
+}
 
-//redirect back to the comment form page
-header('Location: comment_form.php');
-exit;
+// Check if the form has been submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+	// Get the input values
+	$comment = $_POST['comment'];
+	$user_id = $_SESSION['user_id'];
+
+	// Insert the comment into the database
+	$query = "INSERT INTO comment (comment, user_id) VALUES ('$comment', '$user_id')";
+	$result = mysqli_query($conn, $query);
+
+	if ($result) {
+
+		// The comment was inserted successfully, show a success message
+		echo "Comment added successfully.";
+
+	} else {
+
+		// The comment was not inserted, show an error message
+		echo "Error adding comment.";
+
+	}
+
+}
+
+mysqli_close($conn);
 ?>
