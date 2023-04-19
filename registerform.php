@@ -11,7 +11,7 @@
 			<ul>
 				<li><a href="home.php">Home</a></li>
 				<li><a href="index.php">Search</a></li>
-				<li><a href="comment_form.php">Comments</a></li>
+				<li><a href="comment_page.php">Comments</a></li>
 				<li><a href="registerform.php">Register</a></li>
 				<li><a href="loginform.php">Login</a></li>
 				
