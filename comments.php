@@ -12,7 +12,7 @@ if (!$conn) {
 }
 
 // Query the database for comments
-$query = "SELECT comment.id, comment.comment, users.nickname, comment.user_id FROM comment JOIN users ON comment.user_id = users.ID";
+$query = "SELECT comment.id, comment.comment, users.nickname, admin.name AS admin_name, comment.user_id, comment.admin_id FROM comment LEFT JOIN users ON comment.user_id = users.ID LEFT JOIN admin ON comment.admin_id = admin.ID";
 
 $result = mysqli_query($conn, $query);
 
@@ -21,7 +21,12 @@ if (mysqli_num_rows($result) > 0) {
 
 	// Display each comment
 	while ($row = mysqli_fetch_assoc($result)) {
-        echo "<p><strong>" . $row['nickname'] . ":</strong> " . $row['comment'];
+        if ($row['admin_name']) {
+            echo "<p><strong>" . $row['admin_name'] . ":</strong> " . $row['comment'];
+        } else {
+            echo "<p><strong>" . $row['nickname'] . ":</strong> " . $row['comment'];
+        }
+
         
         // Check if the user wrote the comment and add update and delete buttons
         if (isset($_SESSION['user_id']) && $row['user_id'] == $_SESSION['user_id']) {

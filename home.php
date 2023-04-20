@@ -79,14 +79,19 @@
 		</div>
 	</div>
 	<?php
-	session_start(); // Start the session
+session_start(); // Start the session
 
-if(isset($_SESSION['user_id'])) {
-   // The user is currently in a session
-   echo "You are in session!";
+if(isset($_SESSION['user_id']) && isset($_SESSION['nickname'])) {
+   // The user is currently logged in as a user
+   echo "You are logged in as a user!";
+   echo "Welcome " . $_SESSION['nickname'];
+} else if(isset($_SESSION['admin_id']) && isset($_SESSION['admin_name'])) {
+   // The user is currently logged in as an admin
+   echo "You are logged in as an admin!";
+   echo "Welcome " . $_SESSION['admin_name'];
 } else {
-   // The user is not currently in a session
-   echo "You are not in session!";
+   // The user is not currently logged in
+   echo "You are not logged in!";
 }
 ?>
 </body>
