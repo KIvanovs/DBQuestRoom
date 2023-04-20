@@ -30,7 +30,14 @@
 	?>
 	<hr>
 	<?php
+	if (isset($_SESSION['nickname'])) {
 		include 'comments.php';
+	}
+	if (isset($_SESSION['admin_name'])) {
+		include 'admin_comments.php';
+	}
+
+		
 	?>
 </body>
 </html>

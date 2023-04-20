@@ -1,11 +1,7 @@
 <?php
 session_start();
 
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-	header("Location: login.php");
-	exit();
-}
+
 
 // Database connection
 $dbhost = 'localhost';
@@ -28,7 +24,8 @@ $result = mysqli_query($conn, $query);
 if ($result) {
 
 	// The comment was deleted successfully, show a success message
-	echo "Comment deleted successfully.";
+	header("Location: comment_page.php");
+                exit();
 
 } else {
 
