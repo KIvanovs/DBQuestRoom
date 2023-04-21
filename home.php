@@ -14,6 +14,12 @@
 				<li><a href="comment_page.php">Comments</a></li>
 				<li><a href="registerform.php">Register</a></li>
 				<li><a href="loginform.php">Login</a></li>
+				<?php
+				session_start();
+				if(isset($_SESSION['admin_id']) && isset($_SESSION['admin_name'])){
+					echo "<li><a href='admin.php'>Admin info</a></li>";
+				}
+				?>
 				<form action="logout.php" method="post">
     				<button type="submit" name="logout">Logout</button>
 				</form>
@@ -79,7 +85,6 @@
 		</div>
 	</div>
 	<?php
-session_start(); // Start the session
 
 if(isset($_SESSION['user_id']) && isset($_SESSION['nickname'])) {
    // The user is currently logged in as a user
