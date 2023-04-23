@@ -21,6 +21,11 @@ searcher
 
 Working functions:
 search
-login(now fixed)
+login
 register
-comments
+add/delete/update admin
+add/delete/update comments
+
+To do list:
+add/delete/update quest room
+reserve quest room
