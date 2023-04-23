@@ -31,6 +31,14 @@ if(isset($_POST['update_admin'])){
     $personCode = $_POST['personCode'];
     $phoneNumber = $_POST['phoneNumber'];
 
+    // Check if email, personCode and phoneNumber already exist in database
+    $query = "SELECT * FROM admin WHERE email='$email' OR personCode='$personCode' OR phoneNumber='$phoneNumber'";
+    $result = mysqli_query($conn, $query);
+    if (mysqli_num_rows($result) > 0) {
+        echo "Error: Email, person code, or phone number already exists in the database.";
+        exit();
+    }
+
     // Update data in database
     $query = "UPDATE admin SET name='$name', surname='$surname', email='$email', personCode='$personCode', phoneNumber='$phoneNumber' WHERE ID='$admin_id'";
 
@@ -43,7 +51,7 @@ if(isset($_POST['update_admin'])){
 }
 
 // Get current admin data
-$admin_id = $_POST['admin_id']; // <-- This line should be added at the top
+$admin_id = $_POST['admin_id'];
 $query = "SELECT * FROM admin WHERE ID='$admin_id'";
 $result = mysqli_query($conn, $query);
 

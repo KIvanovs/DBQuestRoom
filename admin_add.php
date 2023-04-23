@@ -22,12 +22,20 @@ if(isset($_POST['submit'])){
     $personCode = $_POST['personCode'];
     $phoneNumber =  $_POST['phoneNumber'];
 
-    // Insert data into database
+    // Insert data into database with duplicate check
     $query = "INSERT INTO admin (name, surname, email, password, personCode, phoneNumber)
-            VALUES ('$name', '$surname', '$email', '$password', '$personCode', '$phoneNumber')";
+              SELECT '$name', '$surname', '$email', '$password', '$personCode', '$phoneNumber'
+              FROM admin
+              WHERE NOT EXISTS (SELECT 1 FROM admin WHERE email='$email' OR personCode='$personCode' OR phoneNumber='$phoneNumber')
+              LIMIT 1";
 
     if(mysqli_query($conn, $query)){
-        echo "New admin added successfully.";
+        if(mysqli_affected_rows($conn) > 0){
+            header("Location: admin.php");
+            exit();
+        } else{
+            echo "Error: Email, person code, or phone number already exists in the database.";
+        }
     } else{
         echo "Error: " . mysqli_error($conn);
     }
@@ -35,6 +43,5 @@ if(isset($_POST['submit'])){
 
 mysqli_close($conn);
 
-header("Location: admin.php");
-exit();
+
 ?>

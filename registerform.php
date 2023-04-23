@@ -3,21 +3,11 @@
 <head>
 	<title>Registration Form</title>
 	<link rel="stylesheet" type="text/css" href="register.css">
-	<link rel="stylesheet" type="text/css" href="header.css">
 </head>
 <body>
-	<header>
-		<nav>
-			<ul>
-				<li><a href="home.php">Home</a></li>
-				<li><a href="index.php">Search</a></li>
-				<li><a href="comment_page.php">Comments</a></li>
-				<li><a href="registerform.php">Register</a></li>
-				<li><a href="loginform.php">Login</a></li>
-				
-			</ul>
-		</nav>
-	</header>
+<?php
+	include 'header.php';
+	?>
 	<div class="container">
 		<h1>Registration Form</h1>
 		<form action="register.php" method="POST">

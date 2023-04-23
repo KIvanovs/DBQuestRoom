@@ -26,17 +26,27 @@
 	// Check if password and confirm password match
 	if ($password !== $confirm_password) {
 		echo "Password and confirm password do not match!";
-		exit;
+		exit();
 	}
 	
 	// Hash password
 	$hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+	// Check if nickname, email or phone number already exists in database
+    $check_duplicate_query = "SELECT * FROM users WHERE nickname = '$nickname' OR email = '$email' OR phoneNumber = '$phone'";
+    $check_duplicate_result = $conn->query($check_duplicate_query);
+    
+    if ($check_duplicate_result->num_rows > 0) {
+        echo "Nickname ,email or phone number already exists!";
+        exit();
+    }
 	
 	// Insert data into database
 	$sql = "INSERT INTO users (nickname,  password, email, name, surname, phoneNumber) VALUES ('$nickname', '$hashed_password', '$email' ,'$name','$surname','$phone')";
 	
 	if ($conn->query($sql) === TRUE) {
 	  echo "New record created successfully";
+	  echo "<p>Please <a href='loginform.php'>log in</a> to start session.</p>";
 	} else {
 	  echo "Error: " . $sql . "<br>" . $conn->error;
 	}

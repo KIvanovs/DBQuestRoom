@@ -3,30 +3,11 @@
 <head>
 	<title>Card Example</title>
 	<link rel="stylesheet" type="text/css" href="home.css">
-	<link rel="stylesheet" type="text/css" href="header.css">
 </head>
 <body>
-	<header>
-		<nav>
-			<ul>
-				<li><a href="home.php">Home</a></li>
-				<li><a href="index.php">Search</a></li>
-				<li><a href="comment_page.php">Comments</a></li>
-				<li><a href="registerform.php">Register</a></li>
-				<li><a href="loginform.php">Login</a></li>
-				<?php
-				session_start();
-				if(isset($_SESSION['admin_id']) && isset($_SESSION['admin_name'])){
-					echo "<li><a href='admin.php'>Admin info</a></li>";
-				}
-				?>
-				<form action="logout.php" method="post">
-    				<button type="submit" name="logout">Logout</button>
-				</form>
-				
-			</ul>
-		</nav>
-	</header>
+	<?php
+	include 'header.php';
+	?>
 	<div class="card-container">
 		<div class="card">
 			<div class="card-image">

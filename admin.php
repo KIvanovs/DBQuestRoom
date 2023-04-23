@@ -4,9 +4,11 @@
 	<title>Comments</title>
 </head>
 <body>
+<?php
+	include 'header.php';
+	?>
 	<h1>Admin info</h1>
 	<?php
-    session_start();
 		if (isset($_SESSION['admin_name'])) {
 			echo "<p>Welcome, " . $_SESSION['admin_name'] . "!</p>";
 		}
