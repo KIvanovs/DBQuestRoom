@@ -21,6 +21,7 @@
 				
 				if(isset($_SESSION['admin_id']) && isset($_SESSION['admin_name'])){
 					echo "<li><a href='admin.php'>Admin info</a></li>";
+                    echo "<li><a href='quest_form.php'>Add quest room</a></li>";
 				}
 				?>
 				
