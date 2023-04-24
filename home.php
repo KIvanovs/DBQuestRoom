@@ -7,65 +7,6 @@
 <body>
 	<?php
 	include 'header.php';
-	?>
-	<div class="card-container">
-		<div class="card">
-			<div class="card-image">
-				<img src="photo/escape-room1.jpg"alt="placeholder image">
-			</div>
-			<div class="card-content">
-				<h2>Saw</h2>
-				<p>Text about this location</p>
-				<a href="#" class="btn">Read More</a>
-			</div>
-		</div>
-		<div class="card">
-			<div class="card-image">
-				<img src="photo/escape-room2.jpg" alt="placeholder image">
-			</div>
-			<div class="card-content">
-				<h2>Murder's room</h2>
-				<p>Text about this location</p>
-				<a href="#" class="btn">Read More</a>
-			</div>
-			
-		</div>
-		<div class="card">
-			<div class="card-image">
-				<img src="photo/escape-room3.jpg" alt="placeholder image">
-			</div>
-			<div class="card-content">
-				<h2>Slaughterhouse</h2>
-				<p>Text about this location</p>
-				<a href="#" class="btn">Read More</a>
-			</div>
-			
-		</div>
-		<div class="card">
-			<div class="card-image">
-				<img src="photo/escape-room4.jpg" alt="placeholder image">
-			</div>
-			<div class="card-content">
-				<h2>Dracula's castle</h2>
-				<p>Text about this location</p>
-				<a href="#" class="btn">Read More</a>
-			</div>
-			
-		</div>
-		<div class="card">
-			<div class="card-image">
-				<img src="photo/escape-room5.jpg" alt="placeholder image">
-				<div class="category">Horror</div>
-			</div>
-			<div class="card-content">
-				<h2>Psyho's room</h2>
-				<p>Text about this location</p>
-				<a href="psyho_room.php" class="btn">Read More</a>
-			</div>
-			
-		</div>
-	</div>
-	<?php
 
 if(isset($_SESSION['user_id']) && isset($_SESSION['nickname'])) {
    // The user is currently logged in as a user
@@ -79,6 +20,50 @@ if(isset($_SESSION['user_id']) && isset($_SESSION['nickname'])) {
    // The user is not currently logged in
    echo "You are not logged in!";
 }
+
+
+// Connect to database
+$dbhost = 'localhost';
+$dbname = 'testdb';
+$dbuser = 'root';
+$dbpass = '';
+
+$conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
+
+if (!$conn) {
+	die("Connection failed: " . mysqli_connect_error());
+}
+
+// Select all quests from the database
+$query = "SELECT * FROM quests";
+$result = mysqli_query($conn, $query);
+
+// Display each quest as a card
+while ($row = mysqli_fetch_assoc($result)) {
+	$id = $row['ID'];
+	$name = $row['name'];
+	$category = $row['category'];
+	$address = $row['adress'];
+	$discount = $row['discount'];
+	$peopleAmount = $row['peopleAmount'];
+	$ageLimit = $row['ageLimit'];
+	$description = $row['description'];
+	$photoPath = $row['photoPath'];
+	
+	echo '<div class="card">';
+	echo '<div class="card-image">';
+	echo '<img src="' . $photoPath . '" alt="photo of ' . $name . '">';
+	echo '</div>';
+	echo '<div class="card-content">';
+	echo '<h2>' . $name . '</h2>';
+	echo '<p>' . $description . '</p>';
+	echo '<a href="quest_info.php?ID=' . $id . '" class="btn">Read More</a>';
+	echo '</div>';
+	echo '</div>';
+}
+
+// Close database connection
+mysqli_close($conn);
 ?>
 </body>
 </html>
