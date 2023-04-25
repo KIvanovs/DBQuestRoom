@@ -60,9 +60,10 @@ mysqli_close($conn);
             <p>Number of people: <?php echo $peopleAmount; ?></p>
             <p>Age limit: <?php echo $ageLimit; ?></p>
             <p>Description: <?php echo $description; ?></p>
-            <form action="reserve.php" method="post" onsubmit="return false;">
+            <form action="reserve.php" method="post">
                 <h1>Reservation</h1>
-                <input type="hidden" name="quest_id" value="<?php echo $quest_id; ?>">
+                <input type="hidden" name="room_id" value="<?php echo $quest_id; ?>">
+                <input type="hidden" name="discount" value="<?php echo $discount; ?>">
                 <label for="date">Date:</label>
                 <input type="date" name="date" id="date" min="<?php echo date('Y-m-d'); ?>" required>
                 <br><br>
@@ -89,7 +90,7 @@ mysqli_close($conn);
                             <option value="cash">Cash</option>
                             <option value="card">Card</option>
                         </select>
-                        <button type="submit" onclick="reserve()">Reserve</button>
+                        <button type="submit" name="submit">Reserve</button>
                     </div>
                 </div>
             </form>
@@ -103,11 +104,20 @@ mysqli_close($conn);
                     
                     totaldiscount = total / 100 * discount ;
                     total = total - totaldiscount ;
-                    roundedNum = parseFloat(total.toFixed(2));
+                    cost = parseFloat(total.toFixed(2));
 
                     document.getElementById("selected-time").innerHTML = time;
-                    document.getElementById("total-price").innerHTML = roundedNum;
+                    document.getElementById("total-price").innerHTML = cost;
                     document.getElementById("payment-modal").style.display = "block";
+
+                    cookie(time);
+
+
+
+                }
+
+                function cookie(time){
+                    document.cookie = "time="+time;
                 }
 
                 function closeModal() {
