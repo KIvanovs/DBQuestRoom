@@ -1,5 +1,6 @@
 <?php
-session_start();
+
+include 'header.php';
 
 // Check if the user is not an admin
 if (!isset($_SESSION['admin_id']) || empty($_SESSION['admin_id'])) {
@@ -59,9 +60,9 @@ if (mysqli_num_rows($result) > 0) {
         echo "</form>";
 
         // Add a link for editing this user
-        echo "<form method='post' action='user_update.php'>";
+        echo "<form method='post' action='user_update_form.php'>";
         echo "<input type='hidden' name='user_id' value='" . $row['ID'] . "'>";
-        echo "<input type='submit' value='Update'>";
+        echo "<input type='submit' name='update_user' value='Update'>";
         echo "</form>";
     }
 

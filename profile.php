@@ -46,7 +46,7 @@ if (mysqli_num_rows($user_result) > 0) {
     
     // вывод данных о резервациях
     while ($reservation_row = mysqli_fetch_assoc($reservation_result)) {
-      echo "<li>Date: {$reservation_row['date']} | Time: {$reservation_row['time']} | Cost: {$reservation_row['cost']} | Quest: {$reservation_row['name']} ({$reservation_row['adress']}) | Payment type: {$reservation_row['payment']}</li>";
+      echo "<li>Date: {$reservation_row['date']} | Time: {$reservation_row['time']} | Cost: {$reservation_row['cost']} | Quest: {$reservation_row['name']} ({$reservation_row['adress']}) | Payment type: {$reservation_row['payment']}</li><br><br>";
     }
     
     echo "</ul>";
@@ -54,13 +54,13 @@ if (mysqli_num_rows($user_result) > 0) {
     echo "<p>No reservations found.</p>";
   }
  
-  $admin_query = "SELECT phoneNumber FROM admin";
+  $admin_query = "SELECT phoneNumber,email FROM admin";
   $admin_result = mysqli_query($conn, $admin_query);
   
   if (mysqli_num_rows($admin_result) > 0) {
     $admin_row = mysqli_fetch_assoc($admin_result);
     echo "<br><br>";
-    echo "<li>If you want to change reservation time or you person data, please contact to this phone: {$admin_row['phoneNumber']}</li>";
+    echo "<li>If you want to change reservation time or you person data, please contact to this phone: {$admin_row['phoneNumber']} or write to this email: {$admin_row['email']} </li>";
   } else {
     echo "<li>No admin found.</li>";
   }

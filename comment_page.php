@@ -38,7 +38,9 @@
 	if (isset($_SESSION['admin_name'])) {
 		include 'admin_comments.php';
 	}
-
+	if (!isset($_SESSION['nickname']) || !isset($_SESSION['admin_name'])) {
+		include 'comments.php';
+	}
 		
 	?>
 </body>
