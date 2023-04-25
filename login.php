@@ -1,6 +1,15 @@
 <?php
 session_start();
 
+// unset all session variables
+$_SESSION = array();
+
+// destroy session
+session_destroy();
+
+
+session_start();
+
 //connect to database
 $dbhost = 'localhost';
 $dbname = 'testdb';

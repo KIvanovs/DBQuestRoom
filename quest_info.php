@@ -46,6 +46,7 @@ mysqli_close($conn);
 <html>
 <head>
     <title><?php echo $name; ?></title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <div class="card">
@@ -62,7 +63,7 @@ mysqli_close($conn);
             <p>Description: <?php echo $description; ?></p>
             <form action="reserve.php" method="post">
                 <h1>Reservation</h1>
-                <input type="hidden" name="room_id" value="<?php echo $quest_id; ?>">
+                <input type="hidden" name="quest_id" value="<?php echo $quest_id; ?>">
                 <input type="hidden" name="discount" value="<?php echo $discount; ?>">
                 <label for="date">Date:</label>
                 <input type="date" name="date" id="date" min="<?php echo date('Y-m-d'); ?>" required>
@@ -80,7 +81,6 @@ mysqli_close($conn);
                 <br><br>
                 <div id="payment-modal" class="modal">
                     <div class="modal-content">
-                        <span class="close" onclick="closeModal()">&times;</span>
                         <h2>Payment</h2>
                         <p>You have selected:</p>
                         <p id="selected-time"></p>
@@ -94,39 +94,43 @@ mysqli_close($conn);
                     </div>
                 </div>
             </form>
+
             <script>
-                var selectedTime = '';
+                
                 var discount = <?php echo $discount ?>;
 
                 function selectTime(time, price) {
-                    selectedTime = time;
+                    var selectedTime = time;
                     var total = price;
                     
                     totaldiscount = total / 100 * discount ;
                     total = total - totaldiscount ;
                     cost = parseFloat(total.toFixed(2));
 
-                    document.getElementById("selected-time").innerHTML = time;
+                    document.getElementById("selected-time").innerHTML = selectedTime;
                     document.getElementById("total-price").innerHTML = cost;
                     document.getElementById("payment-modal").style.display = "block";
 
                     cookie(time);
-
-
+                    
+                    // $.ajax({
+                    //     type: "POST",
+                    //     url: "reserve.php",
+                    //     data: { 
+                    //         time: selectedTime, 
+                    //         cost: cost 
+                    //     },
+                    //     success: function(response) {
+                    //         console.log(response);
+                    //     }
+                    // });
+                    
 
                 }
-
                 function cookie(time){
                     document.cookie = "time="+time;
                 }
 
-                function closeModal() {
-                    document.getElementById("payment-modal").style.display = "none";
-                }
-                function reserve() {
-                    var paymentMethod = document.getElementById("payment-method").value;
-                    // Here you can add code to submit the form with the selected time and payment method
-                }
             </script>
         </div>
     </div>

@@ -14,17 +14,17 @@ if (!$conn) {
 	die("Connection failed: " . mysqli_connect_error());
 }
 
-// Get the comment ID from the form
-$comment_id = $_POST['comment_id'];
+// Get the room ID from the form
+$id = $_POST['id'];
 
 // Delete the comment from the database
-$query = "DELETE FROM comment WHERE id = $comment_id";
+$query = "DELETE FROM quests WHERE ID = $id";
 $result = mysqli_query($conn, $query);
 
 if ($result) {
 
 	// The comment was deleted successfully, 
-	header("Location: comment_page.php");
+	header("Location: quest_form.php");
     exit();
 
 } else {
