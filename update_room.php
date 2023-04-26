@@ -55,7 +55,7 @@ if(isset($_POST['update_room'])){
 
 
     if(mysqli_query($conn, $query)){
-        header("Location: admin.php");
+        header("Location: quest_form.php");
         exit();
     } else{
         echo "Error updating room: " . mysqli_error($conn);
@@ -81,6 +81,8 @@ if(mysqli_num_rows($result) == 1){
     echo "<p><label for='peopleAmount'>People Amount:</label> <input type='text' name='peopleAmount' value='" . $row['peopleAmount'] . "'></p>";
     echo "<p><label for='ageLimit'>Age Limit:</label> <input type='text' name='ageLimit' value='" . $row['ageLimit'] . "'></p>";
     echo "<p><label for='description'>Description:</label> <textarea name='description'>" . $row['description'] . "</textarea></p>";
+    echo "<p>Current photo path: " . $row['photoPath'] . "</p>";
+    echo "<img src='" . $row['photoPath'] . "' alt='Room photo' style='max-width: 200px; max-height: 200px;'>";
     echo "<p><label for='photo'>Photo:</label> <input type='file' name='photo'></p>";
     echo "<input type='hidden' name='photoPath' value='" . $row['photoPath'] . "'>";
     echo "<input type='hidden' name='room_id' value='" . $row['ID'] . "'>";

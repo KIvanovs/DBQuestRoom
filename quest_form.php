@@ -49,6 +49,7 @@
       <th>Age Limit</th>
       <th>Description</th>
       <th>Photo Path</th>
+	  <th>Photo </th>
       <th>Update</th>
       <th>Delete</th>
     </tr>
@@ -99,6 +100,7 @@
 		  echo "<td>$ageLimit</td>";
 		  echo "<td>$description</td>";
 		  echo "<td>$photoPath</td>";
+		  echo "<td><img src='$photoPath' alt='Room photo' style='max-width: 200px; max-height: 200px;'></td>";
 		  echo "<td>";
 		  echo "<form action='update_room.php' method='POST'>";
 		  echo "<input type='hidden' name='id' value='" . $row['ID'] . "'>";
