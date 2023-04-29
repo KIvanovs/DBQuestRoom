@@ -33,11 +33,19 @@
 	$hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
 	// Check if nickname, email or phone number already exists in database
-    $check_duplicate_query = "SELECT * FROM users WHERE nickname = '$nickname' OR email = '$email' OR phoneNumber = '$phone'";
-    $check_duplicate_result = $conn->query($check_duplicate_query);
+    $check_duplicate_user_query = "SELECT * FROM users WHERE nickname = '$nickname' OR email = '$email' OR phoneNumber = '$phone'";
+    $check_duplicate_user_result = $conn->query($check_duplicate_user_query);
     
-    if ($check_duplicate_result->num_rows > 0) {
+    if ($check_duplicate_user_result->num_rows > 0) {
         echo "Nickname ,email or phone number already exists!";
+        exit();
+    }
+
+    $check_duplicate_admin_query = "SELECT * FROM admin WHERE email = '$email' OR phoneNumber = '$phone'";
+    $check_duplicate_admin_result = $conn->query($check_duplicate_admin_query);
+    
+    if ($check_duplicate_admin_result->num_rows > 0) {
+        echo "Email or phone number already exists!";
         exit();
     }
 	

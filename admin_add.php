@@ -22,12 +22,26 @@ if(isset($_POST['submit'])){
     $personCode = $_POST['personCode'];
     $phoneNumber =  $_POST['phoneNumber'];
 
+	// Check if nickname, email or phone number already exists in database
+    $check_duplicate_user_query = "SELECT * FROM users WHERE email = '$email' OR phoneNumber = '$phoneNumber'";
+    $check_duplicate_user_result = $conn->query($check_duplicate_user_query);
+    
+    if ($check_duplicate_user_result->num_rows > 0) {
+        echo "Email or phone number already exists!";
+        exit();
+    }
+
+    $check_duplicate_admin_query = "SELECT * FROM admin WHERE personCode = '$personCode' OR email = '$email' OR phoneNumber = '$phoneNumber'";
+    $check_duplicate_admin_result = $conn->query($check_duplicate_admin_query);
+    
+    if ($check_duplicate_admin_result->num_rows > 0) {
+        echo "Personal code, email or phone number already exists!";
+        exit();
+    }
+
     // Insert data into database with duplicate check
     $query = "INSERT INTO admin (name, surname, email, password, personCode, phoneNumber)
-              SELECT '$name', '$surname', '$email', '$password', '$personCode', '$phoneNumber'
-              FROM admin
-              WHERE NOT EXISTS (SELECT 1 FROM admin WHERE email='$email' OR personCode='$personCode' OR phoneNumber='$phoneNumber')
-              LIMIT 1";
+              VALUES ('$name', '$surname', '$email', '$password', '$personCode', '$phoneNumber')";
 
     if(mysqli_query($conn, $query)){
         if(mysqli_affected_rows($conn) > 0){
