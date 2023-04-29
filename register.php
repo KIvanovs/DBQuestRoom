@@ -23,7 +23,39 @@
 	
 
 	
-	// Check if password and confirm password match
+	// Validate form data
+	if (empty($nickname) || empty($name) || empty($surname) || empty($email) || empty($password) || empty($confirm_password) || empty($phone)) {
+		echo "Please fill in all fields!";
+		exit();
+	}
+
+	if (strlen($nickname) > 30 || strlen($name) > 30 || strlen($surname) > 30 || strlen($email) > 30 || strlen($confirm_password) > 30 || strlen($phone) > 30){
+		echo "Too long text , maximum 30 symbols!";
+		exit();
+	}
+
+	if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+		echo "Invalid email format!";
+		exit();
+	}
+
+	if (!preg_match("/^[a-zA-Z ]*$/", $name) || !preg_match("/^[a-zA-Z ]*$/", $surname) || !preg_match("/^[a-zA-Z ]*$/", $nickname)) {
+		echo "Name and surname should only contain letters and spaces!";
+		exit();
+	}
+
+	if (!preg_match("/^[0-9]*$/", $phone)) {
+		echo "Invalid phone number format!";
+		exit();
+	}
+
+	if (strlen($password) < 8) {
+		echo "Password should be at least 8 characters long!";
+		exit();
+	}
+
+
+
 	if ($password !== $confirm_password) {
 		echo "Password and confirm password do not match!";
 		exit();

@@ -24,8 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $time = $_COOKIE['time'];
     $discount = $_POST['discount'];
     $payment = $_POST['payment_method'];
-    // $cost = $_POST['cost'];
-    // $time = $_POST['time'];
     if($time == '20:30' || $time == '22:00'){
         $total = 80;
         
