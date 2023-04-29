@@ -47,6 +47,17 @@ if (mysqli_num_rows($result) > 0) {
         if (mysqli_num_rows($reservations_result) > 0) {
             while ($reservation_row = mysqli_fetch_assoc($reservations_result)) {
                 echo "<p>Reservation ID: " . $reservation_row['ID'] . ", Date: " . $reservation_row['date'] . ", Room ID: " . $reservation_row['room_id'] . "</p>";
+                // Add a form for deleting this reservation
+                echo "<form method='post' action='delete_reservation.php'>";
+                echo "<input type='hidden' name='reserv_id' value='" . $reservation_row['ID'] . "'>";
+                echo "<input type='submit' name='delete_reservation' value='Delete reservation'>";
+                echo "</form>";
+
+                // Add a link for updating this reservation
+                echo "<form method='post' action='update_reservation_form.php'>";
+                echo "<input type='hidden' name='reserv_id' value='" . $reservation_row['ID'] . "'>";
+                echo "<input type='submit' name='update_reservation' value='Update reservation'>";
+                echo "</form>";
             }
         } else {
             echo "<p>No reservations found for this user.</p>";
@@ -54,15 +65,16 @@ if (mysqli_num_rows($result) > 0) {
 
 
         // Add a form for deleting this user
+        echo "<br><br>";
         echo "<form method='post' action='user_delete.php'>";
         echo "<input type='hidden' name='user_id' value='" . $row['ID'] . "'>";
-        echo "<input type='submit' name='delete_user' value='Delete'>";
+        echo "<input type='submit' name='delete_user' value='Delete user data'>";
         echo "</form>";
 
         // Add a link for editing this user
         echo "<form method='post' action='user_update_form.php'>";
         echo "<input type='hidden' name='user_id' value='" . $row['ID'] . "'>";
-        echo "<input type='submit' name='update_user' value='Update'>";
+        echo "<input type='submit' name='update_user' value='Update user data'>";
         echo "</form>";
     }
 
