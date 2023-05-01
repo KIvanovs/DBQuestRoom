@@ -18,13 +18,9 @@
 	?>
 	<hr>
 	<?php
-		if (isset($_SESSION['admin_id'])) {
+		if (isset($_SESSION['admin_id']) ||isset($_SESSION['user_id'])) {
 			include 'comment_form.php';
 		} 	
-			if (isset($_SESSION['user_id'])){
-				include 'comment_form.php';
-			}
-
 			else{
 				echo "<p>Please <a href='loginform.php'>log in</a> to add comments.</p>";
 			}
@@ -35,10 +31,10 @@
 	if (isset($_SESSION['nickname'])) {
 		include 'comments.php';
 	}
-	if (isset($_SESSION['admin_name'])) {
+	elseif (isset($_SESSION['admin_name'])) {
 		include 'admin_comments.php';
 	}
-	if (!isset($_SESSION['nickname']) || !isset($_SESSION['admin_name'])) {
+	else{
 		include 'comments.php';
 	}
 		

@@ -39,17 +39,21 @@ if (mysqli_num_rows($result) > 0) {
         echo "<p><strong>Personal Code:</strong> " . $row['personCode'] . "</p>";
         echo "<p><strong>Phone Number:</strong> " . $row['phoneNumber'] . "</p>";
 
-        // Add a form for deleting this admin
-        echo "<form method='post' action='admin_delete.php'>";
-        echo "<input type='hidden' name='admin_id' value='" . $row['ID'] . "'>";
-        echo "<input type='submit' name='delete_admin' value='Delete'>";
-        echo "</form>";
+        // Add a form for deleting this admin (if the admin is not the one currently logged in)
+        if ($row['ID'] != $_SESSION['admin_id']) {
+            echo "<form method='post' action='admin_delete.php'>";
+            echo "<input type='hidden' name='admin_id' value='" . $row['ID'] . "'>";
+            echo "<input type='submit' name='delete_admin' value='Delete'>";
+            echo "</form>";
+        }
 
-        // Add a link for editing this admin
-        echo "<form method='post' action='admin_update.php'>";
-        echo "<input type='hidden' name='admin_id' value='" . $row['ID'] . "'>";
-        echo "<input type='submit'  value='Update'>";
-        echo "</form>";
+        // Add a link for editing this admin (if the admin is not the one currently logged in)
+        if ($row['ID'] != $_SESSION['admin_id']) {
+            echo "<form method='post' action='admin_update.php'>";
+            echo "<input type='hidden' name='admin_id' value='" . $row['ID'] . "'>";
+            echo "<input type='submit'  value='Update'>";
+            echo "</form>";
+        }
     }
 
 } else {
