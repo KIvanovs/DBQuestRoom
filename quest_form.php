@@ -95,9 +95,9 @@
 		  echo "<td>$name</td>";
 		  echo "<td>$category</td>";
 		  echo "<td>$address</td>";
-		  echo "<td>$discount</td>";
+		  echo "<td>$discount %</td>";
 		  echo "<td>$peopleAmount</td>";
-		  echo "<td>$ageLimit</td>";
+		  echo "<td>$ageLimit +</td>";
 		  echo "<td>$description</td>";
 		  echo "<td>$photoPath</td>";
 		  echo "<td><img src='$photoPath' alt='Room photo' style='max-width: 200px; max-height: 200px;'></td>";

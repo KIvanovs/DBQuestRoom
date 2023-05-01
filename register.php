@@ -39,7 +39,7 @@
 		exit();
 	}
 
-	if (!preg_match("/^[a-zA-Z ]*$/", $name) || !preg_match("/^[a-zA-Z ]*$/", $surname) || !preg_match("/^[a-zA-Z ]*$/", $nickname)) {
+	if (!preg_match("/^[a-zA-Z ]*$/", $name) || !preg_match("/^[a-zA-Z ]*$/", $surname)) {
 		echo "Name and surname should only contain letters and spaces!";
 		exit();
 	}
@@ -53,8 +53,6 @@
 		echo "Password should be at least 8 characters long!";
 		exit();
 	}
-
-
 
 	if ($password !== $confirm_password) {
 		echo "Password and confirm password do not match!";

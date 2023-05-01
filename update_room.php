@@ -33,6 +33,39 @@ if(isset($_POST['update_room'])){
     $ageLimit = mysqli_real_escape_string($conn, $_POST['ageLimit']);
     $description = mysqli_real_escape_string($conn, $_POST['description']);
 
+
+    // Validate form data
+	if (!is_numeric($discount) || $discount < 0 || $discount > 100) {
+		echo "Discount should be a number between 0 and 100!";
+		exit();
+	}
+
+	if (empty($name) || empty($category) || empty($address) || empty($peopleAmount) || empty($ageLimit) || empty($description)) {
+		echo "Please fill in all fields!";
+		exit();
+	}
+	  
+	if (strlen($name) > 50 || strlen($category) > 30 || strlen($address) > 50 || strlen($discount) > 30 || strlen($peopleAmount) > 30 || strlen($ageLimit) > 30 || strlen($description) > 500) {
+		echo "Too long text, maximum 30 symbols for the name, category, address, discount and peopleAmount and maximum 500 symbols for the description!";
+		exit();
+	}
+
+	if (!preg_match("/^[a-zA-Z ]*$/", $category)) {
+		echo "Category should only contain letters and spaces!";
+		exit();
+	}
+	  
+	  
+	if (!preg_match('/^[0-9-]+$/', $peopleAmount)) {
+		echo "People Amount should be a number and hyphen!";
+		exit();
+	}
+	  
+	if (!is_numeric($ageLimit) || $ageLimit <= 0 && $ageLimit >= 99) {
+		echo "Age Limit should be a number greater than 0 and without symbols!";
+		exit();
+	}
+
     function saveImage($file){
         $target_dir = "images/";
         $target_file = $target_dir . basename($file['name']);

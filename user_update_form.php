@@ -39,7 +39,7 @@ echo "<input type='text' name='surname' value='" . $user_data['surname'] . "'></
 echo "<p><label for='email'>Email:</label>";
 echo "<input type='email' name='email' value='" . $user_data['email'] . "'></p>";
 echo "<p><label for='password'>Password:</label>";
-echo "<input type='password' name='password' value='" . $user_data['password'] . "'></p>";
+echo "<input type='password' name='password'></p>";
 echo "<p><label for='phoneNumber'>Phone Number:</label>";
 echo "<input type='text' name='phoneNumber' value='" . $user_data['phoneNumber'] . "'></p>";
 echo "<input type='submit' name='update_user' value='Update'>";
