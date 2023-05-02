@@ -3,7 +3,6 @@
 		<nav>
 			<ul>
 				<li><a href="home.php">Home</a></li>
-				<li><a href="index.php">Search</a></li>
 				<li><a href="comment_page.php">Comments</a></li>
                 <?php
                 session_start();

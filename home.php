@@ -3,6 +3,7 @@
 <head>
   <title>Card Example</title>
   <link rel="stylesheet" type="text/css" href="home.css">
+  <script src="script.js"></script>
 </head>
 <body>
   <?php
@@ -35,10 +36,60 @@
 
   $conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
 
+
   if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
   }
 
+  	// Select all categories from the database
+	$query = "SELECT DISTINCT category FROM quests";
+	$result = mysqli_query($conn, $query);
+	$categories = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+	// Select all age limits from the database
+	$query = "SELECT DISTINCT ageLimit FROM quests ORDER BY ageLimit DESC";
+	$result = mysqli_query($conn, $query);
+	$ageLimits = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+	// Select all age limits from the database
+	$query = "SELECT DISTINCT peopleAmount FROM quests";
+  	$result = mysqli_query($conn, $query);
+  	$peopleAmounts = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+	// Don't close database connection and save data in result
+	mysqli_free_result($result);
+	?>
+
+	<div class="filter-bar">
+		<label for="category">Category:</label>
+		<select id="category" onchange="filterAll()">
+		<option value="">All</option>
+		<?php foreach($categories as $category): ?>
+			<option value="<?php echo $category['category']; ?>"><?php echo $category['category']; ?></option>
+		<?php endforeach; ?>
+		</select>
+
+		<label for="ageLimit">Age Limit:</label>
+		<select id="ageLimit" onchange="filterAll()">
+		<option value="">All</option>
+		<?php foreach($ageLimits as $ageLimit): ?>
+			<option value="<?php echo $ageLimit['ageLimit']; ?>"><?php echo $ageLimit['ageLimit']; ?>+</option>
+		<?php endforeach; ?>
+		</select>
+
+		<label for="peopleAmount">People Amount:</label>
+		<select id="peopleAmount" onchange="filterAll()">
+		<option value="">All</option>
+		<?php foreach($peopleAmounts as $peopleAmount): ?>
+			<option value="<?php echo $peopleAmount['peopleAmount']; ?>"><?php echo $peopleAmount['peopleAmount']; ?></option>
+		<?php endforeach; ?>
+		</select>
+	</div>
+
+
+
+
+	<?php
   // Select all quests from the database, or search for a specific quest if a search query was submitted
   if(isset($_GET['search'])) {
     $search = mysqli_real_escape_string($conn, $_GET['search']);
@@ -66,7 +117,7 @@
     $description = $row['description'];
     $photoPath = $row['photoPath'];
 
-    echo '<div class="card">';
+    echo '<div class="card" data-category="' . $category . '" data-age-limit="' . $ageLimit . '" data-people-amount="' . $peopleAmount . '">';
     echo '<div class="card-image">';
 	echo '<img src="' . $photoPath . '" alt="photo of ' . $name . '">';
 	echo '</div>';
