@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (mysqli_query($conn, $query)) {
         echo "Reservation saved successfully!";
-        echo $cost;
+        echo "<p><a href='home.php'>Back to home page</a> </p>";
     } else {
         echo "Error saving reservation: " . mysqli_error($conn);
     }

@@ -83,6 +83,15 @@ if(isset($_POST['update_room'])){
         $photoPath = $_POST['photoPath'];
     }
 
+    // Check for duplicate name
+	$query = "SELECT * FROM quests WHERE name='$name'";
+	$result = mysqli_query($conn, $query);
+
+	if (mysqli_num_rows($result) > 0) {
+		echo "Quest with this name already exists!";
+		exit;
+	}
+
     // Update data in database
     $query = "UPDATE quests SET name='$name', category='$category', adress='$address', discount='$discount', peopleAmount='$peopleAmount', ageLimit='$ageLimit', description='$description', photoPath='" . mysqli_real_escape_string($conn, $photoPath) . "' WHERE ID='$room_id'";
 

@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "<input type='hidden' name='discount' value='" . $row['discount'] . "'>";
         echo "<input type='hidden' name='room_id' value='" . $row['room_id'] . "'>";
         echo "<label for='date'>Date:</label>";
-        echo "<input type='date' id='date' name='date' value='" . $row['date'] . "'>";
+        echo "<input type='date' id='date' name='date' value='" . $row['date'] . "' min='" . date('Y-m-d') . "'>";
         echo "<br><br>";
         echo "<label for='room_id'>Time (was):</label>";
         echo "<p>" . $row['time'] . "</p>";

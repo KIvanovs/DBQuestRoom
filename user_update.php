@@ -66,7 +66,7 @@ $phone_number = mysqli_real_escape_string($conn, $_POST['phoneNumber']);
         exit();
     }
 
-    $check_duplicate_admin_query = "SELECT * FROM admin WHERE personCode = '$personCode' OR email = '$email' OR phoneNumber = '$phone_number'";
+    $check_duplicate_admin_query = "SELECT * FROM admin WHERE email = '$email' OR phoneNumber = '$phone_number'";
     $check_duplicate_admin_result = $conn->query($check_duplicate_admin_query);
     
     if ($check_duplicate_admin_result->num_rows > 0) {
