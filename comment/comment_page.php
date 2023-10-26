@@ -5,7 +5,6 @@
 </head>
 <body>
 <?php
-// ../ при вызоде из файла
 	include '../includes/header.php';
 	?>
 	<h1>Comments</h1>
@@ -23,7 +22,7 @@
 			include '../comment/comment_form.php';
 		} 	
 			else{
-				echo "<p>Please <a href='register_login/loginform.php'>log in</a> to add comments.</p>";
+				echo "<p>Please <a href='../register_login/loginform.php'>log in</a> to add comments.</p>";
 			}
 		
 	?>

@@ -89,7 +89,7 @@ if(isset($_POST['submit'])){
 
     if(mysqli_query($conn, $query)){
         if(mysqli_affected_rows($conn) > 0){
-            header("Location: admin.php");
+            header("Location: ../admin/admin.php");
             exit();
         } else{
             echo "Error: Email, person code, or phone number already exists in the database.";

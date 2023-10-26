@@ -21,6 +21,6 @@ if (isset($_POST['delete_admin'])) {
     mysqli_query($conn, $delete_query);
 }
 
-header("Location: admin/admin.php");
+header("Location: ../admin/admin.php");
 exit();
 ?>

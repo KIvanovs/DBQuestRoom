@@ -41,7 +41,7 @@ if (mysqli_num_rows($result) > 0) {
 
         // Add a form for deleting this admin (if the admin is not the one currently logged in)
         if ($row['ID'] != $_SESSION['admin_id']) {
-            echo "<form method='post' action='admin/admin_delete.php'>";
+            echo "<form method='post' action='../admin/admin_delete.php'>";
             echo "<input type='hidden' name='admin_id' value='" . $row['ID'] . "'>";
             echo "<input type='submit' name='delete_admin' value='Delete'>";
             echo "</form>";
@@ -49,7 +49,7 @@ if (mysqli_num_rows($result) > 0) {
 
         // Add a link for editing this admin (if the admin is not the one currently logged in)
         if ($row['ID'] != $_SESSION['admin_id']) {
-            echo "<form method='post' action='admin/admin_update.php'>";
+            echo "<form method='post' action='../admin/admin_update.php'>";
             echo "<input type='hidden' name='admin_id' value='" . $row['ID'] . "'>";
             echo "<input type='submit'  value='Update'>";
             echo "</form>";

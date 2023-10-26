@@ -4,7 +4,7 @@ session_start();
 // Check if the user is not an admin
 if (!isset($_SESSION['admin_id']) || empty($_SESSION['admin_id'])) {
     // Redirect the user to the admin login page
-    header("Location: loginform.php");
+    header("Location: ../register_login/loginform.php");
     exit();
 }
 
@@ -89,7 +89,7 @@ if (!empty($password)) {
 
 if (mysqli_query($conn, $query)) {
 // User updated successfully, redirect back to the user list
-header("Location: profile_info.php");
+header("Location: ../profile/profile_info.php");
 exit();
 } else {
 // Error updating user, display an error message

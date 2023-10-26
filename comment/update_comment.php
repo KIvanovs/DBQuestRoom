@@ -43,7 +43,7 @@ if (isset($_POST['update_comment'])) {
 	    die("Error updating comment: " . mysqli_error($conn));
     }
     
-    header("Location: comment/comment_page.php");
+    header("Location: ../comment/comment_page.php");
                 exit();
 }
 ?>

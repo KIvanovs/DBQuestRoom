@@ -119,7 +119,7 @@
 
     echo '<div class="card" data-category="' . $category . '" data-age-limit="' . $ageLimit . '" data-people-amount="' . $peopleAmount . '">';
     echo '<div class="card-image">';
-	echo '<img src=" ../' . $photoPath . '" alt="photo of ' . $name . '">';
+	echo '<img src="' . $photoPath . '" alt="photo of ' . $name . '">';
 	echo '</div>';
 	echo '<div class="card-content">';
 	echo '<h2>' . $name . '</h2>';

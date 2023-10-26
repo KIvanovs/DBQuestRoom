@@ -51,7 +51,7 @@ mysqli_close($conn);
 <body>
     <div class="card">
         <div class="card-image">
-        <img src="../<?php echo $photoPath; ?>" alt="photo of <?php echo $name; ?>" style="max-width: 200px; max-height: 200px;">
+        <img src="<?php echo $photoPath; ?>" alt="photo of <?php echo $name; ?>" style="max-width: 200px; max-height: 200px;">
         </div>
         <div class="card-content">
             <h2><?php echo $name; ?></h2>

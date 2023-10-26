@@ -100,7 +100,7 @@ if(isset($_POST['update_admin'])){
     
 
     if(mysqli_query($conn, $query)){
-        header("Location: admin/admin.php");
+        header("Location: ../admin/admin.php");
         exit();
     } else{
         echo "Error updating admin: " . mysqli_error($conn);

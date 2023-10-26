@@ -14,7 +14,7 @@ if (!$conn) {
 
 // Check if the user is logged in
 if (!isset($_SESSION['user_id']) && !isset($_SESSION['admin_id'])) {
-    header("Location: register_login/loginform.php");
+    header("Location: ../register_login/loginform.php");
     exit();
 }
 
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	if ($result) {
 
 		// The comment was inserted successfully, show a success message
-		header("Location: comment/comment_page.php");
+		header("Location: ../comment/comment_page.php");
     	exit();
 
 	} else {

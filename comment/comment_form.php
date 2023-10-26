@@ -8,7 +8,7 @@
 	
 	<div class="comment-container">		
 		<h1>Add Comment</h1>
-	<form method="post" action="comment/process_comment.php">
+	<form method="post" action="../comment/process_comment.php">
 		<label>Comment:</label>
 		<textarea name="comment" required></textarea><br><br>
 		<input type="submit" value="Add Comment">

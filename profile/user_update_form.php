@@ -4,7 +4,7 @@ session_start();
 // Check if the user is not an admin
 if (!isset($_SESSION['admin_id']) || empty($_SESSION['admin_id'])) {
     // Redirect the user to the admin login page
-    header("Location: loginform.php");
+    header("Location: ../register_login/loginform.php");
     exit();
 }
 
@@ -28,7 +28,7 @@ $result = mysqli_query($conn, $query);
 $user_data = mysqli_fetch_assoc($result);
 
 // Display the user data in a form for editing
-echo "<form method='post' action='user_update.php'>";
+echo "<form method='post' action='../profile/user_update.php'>";
 echo "<input type='hidden' name='user_id' value='" . $user_id . "'>";
 echo "<p><label for='nickname'>Nickname:</label>";
 echo "<input type='text' name='nickname' value='" . $user_data['nickname'] . "'></p>";

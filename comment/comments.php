@@ -30,12 +30,12 @@ if (mysqli_num_rows($result) > 0) {
         
         // Check if the user wrote the comment and add update and delete buttons
         if (isset($_SESSION['user_id']) && $row['user_id'] == $_SESSION['user_id']) {
-            echo "<form method='post' action='comment/delete_comment.php'>";
+            echo "<form method='post' action='../comment/delete_comment.php'>";
             echo "<input type='hidden' name='comment_id' value='" . $row['id'] . "'>";
             echo "<input type='submit' value='Delete'>";
             echo "</form>";
     
-            echo "<form method='post' action='comment/update_comment.php'>";
+            echo "<form method='post' action='../comment/update_comment.php'>";
             echo "<input type='hidden' name='comment_id' value='" . $row['id'] . "'>";
             echo "<input type='submit' value='Update'>";
             echo "</form>";

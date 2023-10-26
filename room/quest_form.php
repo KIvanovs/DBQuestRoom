@@ -100,7 +100,7 @@
 		  echo "<td>$ageLimit +</td>";
 		  echo "<td>$description</td>";
 		  echo "<td>$photoPath</td>";
-		  echo "<td><img src= '../$photoPath' alt='Room photo' style='max-width: 200px; max-height: 200px;'></td>";
+		  echo "<td><img src= '$photoPath' alt='Room photo' style='max-width: 200px; max-height: 200px;'></td>";
 		  echo "<td>";
 		  echo "<form action='../room/update_room.php' method='POST'>";
 		  echo "<input type='hidden' name='id' value='" . $row['ID'] . "'>";

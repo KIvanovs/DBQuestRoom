@@ -23,13 +23,13 @@ if (mysqli_num_rows($result) > 0) {
     while ($row = mysqli_fetch_assoc($result)) {
         if ($row['admin_name']) {
             echo "<p><strong>" . $row['admin_name'] . ":</strong> " . $row['comment'];
-            echo "<form method='post' action='admin/delete_comment.php'>";
+            echo "<form method='post' action='../comment/delete_comment.php'>";
             echo "<input type='hidden' name='comment_id' value='" . $row['id'] . "'>";
             echo "<input type='submit' value='Delete'>";
             echo "</form>";
         } else {
             echo "<p><strong>" . $row['nickname'] . ":</strong> " . $row['comment'];
-            echo "<form method='post' action='admin/delete_comment.php'>";
+            echo "<form method='post' action='../comment/delete_comment.php'>";
             echo "<input type='hidden' name='comment_id' value='" . $row['id'] . "'>";
             echo "<input type='submit' value='Delete'>";
             echo "</form>";
@@ -39,14 +39,14 @@ if (mysqli_num_rows($result) > 0) {
         if (isset($_SESSION['admin_id']) && $row['admin_id'] == $_SESSION['admin_id']) {
             
     
-            echo "<form method='post' action='admin/update_comment.php'>";
+            echo "<form method='post' action='../comment/update_comment.php'>";
             echo "<input type='hidden' name='comment_id' value='" . $row['id'] . "'>";
             echo "<input type='submit' value='Update'>";
             echo "</form>";
         } elseif (isset($_SESSION['user_id']) && $row['user_id'] == $_SESSION['user_id']) {
 
     
-            echo "<form method='post' action='admin/update_comment.php'>";
+            echo "<form method='post' action='../comment/update_comment.php'>";
             echo "<input type='hidden' name='comment_id' value='" . $row['id'] . "'>";
             echo "<input type='submit' value='Update' disabled>";
             echo "</form>";

@@ -1,11 +1,11 @@
 <?php
 
-include 'header.php';
+include '../includes/header.php';
 
 // Check if the user is not an admin
 if (!isset($_SESSION['admin_id']) || empty($_SESSION['admin_id'])) {
     // Redirect the user to the admin login page
-    header("Location: loginform.php");
+    header("Location: ../register_login/loginform.php");
     exit();
 }
 
@@ -48,13 +48,13 @@ if (mysqli_num_rows($result) > 0) {
             while ($reservation_row = mysqli_fetch_assoc($reservations_result)) {
                 echo "<p>Reservation ID: " . $reservation_row['ID'] . ", Date: " . $reservation_row['date'] . ", Room ID: " . $reservation_row['room_id'] . "</p>";
                 // Add a form for deleting this reservation
-                echo "<form method='post' action='delete_reservation.php'>";
+                echo "<form method='post' action='../room/delete_reservation.php'>";
                 echo "<input type='hidden' name='reserv_id' value='" . $reservation_row['ID'] . "'>";
                 echo "<input type='submit' name='delete_reservation' value='Delete reservation'>";
                 echo "</form>";
 
                 // Add a link for updating this reservation
-                echo "<form method='post' action='update_reservation_form.php'>";
+                echo "<form method='post' action='../room/update_reservation_form.php'>";
                 echo "<input type='hidden' name='reserv_id' value='" . $reservation_row['ID'] . "'>";
                 echo "<input type='submit' name='update_reservation' value='Update reservation'>";
                 echo "</form>";
@@ -66,13 +66,13 @@ if (mysqli_num_rows($result) > 0) {
 
         // Add a form for deleting this user
         echo "<br><br>";
-        echo "<form method='post' action='user_delete.php'>";
+        echo "<form method='post' action='../profile/user_delete.php'>";
         echo "<input type='hidden' name='user_id' value='" . $row['ID'] . "'>";
         echo "<input type='submit' name='delete_user' value='Delete user data'>";
         echo "</form>";
 
         // Add a link for editing this user
-        echo "<form method='post' action='user_update_form.php'>";
+        echo "<form method='post' action='../profile/user_update_form.php'>";
         echo "<input type='hidden' name='user_id' value='" . $row['ID'] . "'>";
         echo "<input type='submit' name='update_user' value='Update user data'>";
         echo "</form>";

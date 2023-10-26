@@ -24,7 +24,7 @@ $result = mysqli_query($conn, $query);
 if ($result) {
 
 	// The comment was deleted successfully, 
-	header("Location: comment/comment_page.php");
+	header("Location: ../comment/comment_page.php");
     exit();
 
 } else {

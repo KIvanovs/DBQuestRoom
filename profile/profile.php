@@ -1,5 +1,5 @@
 <?php
-include 'header.php';
+include '../includes/header.php';
 
 // подключение к базе данных
 $dbhost = 'localhost';

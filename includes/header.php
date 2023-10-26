@@ -9,7 +9,7 @@
 
 
 				if(isset($_SESSION['user_id'])){
-					echo "<li><a href='profile/profile.php'>Profile</a></li>";
+					echo "<li><a href='../profile/profile.php'>Profile</a></li>";
 				}
 				
 				if(isset($_SESSION['admin_id']) && isset($_SESSION['admin_name'])){
