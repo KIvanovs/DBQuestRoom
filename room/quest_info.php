@@ -1,11 +1,5 @@
 <?php
-// Connect to database
-$dbhost = 'localhost';
-$dbname = 'testdb';
-$dbuser = 'root';
-$dbpass = '';
-
-$conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
+include '../includes/dbcon.php';
 
 if (!$conn) {
 	die("Connection failed: " . mysqli_connect_error());
@@ -65,6 +59,8 @@ mysqli_close($conn);
                 <h1>Reservation</h1>
                 <input type="hidden" name="quest_id" value="<?php echo $quest_id; ?>">
                 <input type="hidden" name="discount" value="<?php echo $discount; ?>">
+                <input type="hidden" name="time" id="selected-time">
+                <input type="hidden" name="cost" id="cost-input">
                 <label for="date">Date:</label>
                 <input type="date" name="date" id="date" min="<?php echo date('Y-m-d'); ?>" required>
                 <br><br>
@@ -96,42 +92,42 @@ mysqli_close($conn);
             </form>
 
             <script>
-                
-                var discount = <?php echo $discount ?>;
+            var discount = <?php echo $row['discount'] ?>;
 
-                function selectTime(time, price) {
-                    var selectedTime = time;
-                    var total = price;
-                    
-                    totaldiscount = total / 100 * discount ;
-                    total = total - totaldiscount ;
-                    cost = parseFloat(total.toFixed(2));
+            function selectTime(time, price) {
+            var selectedTime = time;
+            var total = price;
 
-                    document.getElementById("selected-time").innerHTML = selectedTime;
-                    document.getElementById("total-price").innerHTML = cost;
-                    document.getElementById("payment-modal").style.display = "block";
+            totaldiscount = total / 100 * discount;
+            total = total - totaldiscount;
+            cost = parseFloat(total.toFixed(2));
 
-                    cookie(time);
-                    
-                    // $.ajax({
-                    //     type: "POST",
-                    //     url: "reserve.php",
-                    //     data: { 
-                    //         time: selectedTime, 
-                    //         cost: cost 
-                    //     },
-                    //     success: function(response) {
-                    //         console.log(response);
-                    //     }
-                    // });
-                    
+            document.getElementById("selected-time").innerHTML = selectedTime;
+            document.getElementById("total-price").innerHTML = cost;
 
+            // Set the selected time and cost in the hidden input fields
+            document.getElementById("selected-time").value = selectedTime;
+            document.getElementById("cost-input").value = cost;
+
+            // Send the cost and selected time to a PHP
+            $.ajax({
+                type: "POST",
+                url: "reserve.php",
+                data: {
+                    cost: cost,
+                    time: selectedTime 
+                },
+                success: function (response) {
+                    console.log("Cost and time sent to PHP: " + cost + " " + selectedTime);
+                },
+                error: function () {
+                    console.error("AJAX request failed");
                 }
-                function cookie(time){
-                    document.cookie = "time="+time;
-                }
+            });
 
-            </script>
+            document.getElementById("payment-modal").style.display = "block";
+        }
+        </script>
         </div>
     </div>
 </body>

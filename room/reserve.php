@@ -1,12 +1,7 @@
 <?php
 session_start();
-// Connect to database
-$dbhost = 'localhost';
-$dbname = 'testdb';
-$dbuser = 'root';
-$dbpass = '';
 
-$conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
+include '../includes/dbcon.php';
 
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
@@ -18,22 +13,13 @@ if (!isset($_SESSION['user_id'])) {
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get reservation data from POST request
+
     $room_id = $_POST['quest_id'];
     $date = $_POST['date'];
-    $time = $_COOKIE['time'];
+    $time = $_POST['time'];
     $discount = $_POST['discount'];
     $payment = $_POST['payment_method'];
-    if($time == '20:30' || $time == '22:00'){
-        $total = 80;
-        
-    }
-    else{
-        $total = 60;  
-    }
-    $totaldiscount = $total / 100 * $discount ;
-    $cost = $total - $totaldiscount ;
-    $cost = (round($cost,2));
+    $cost = $_POST['cost'];
 
     // Check if a reservation already exists for the given date and time
     $query = "SELECT * FROM reservation WHERE room_id='$room_id' AND date='$date' AND time='$time'";

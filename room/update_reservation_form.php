@@ -9,12 +9,7 @@ if (!isset($_SESSION['admin_id']) || empty($_SESSION['admin_id'])) {
     exit();
 }
 
-// Database connection
-$dbhost = 'localhost';
-$dbname = 'testdb';
-$dbuser = 'root';
-$dbpass = '';
-$conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
+include '../includes/dbcon.php';
 
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
@@ -40,11 +35,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "<input type='hidden' name='reserv_id' value='" . $reserv_id . "'>";
         echo "<input type='hidden' name='discount' value='" . $row['discount'] . "'>";
         echo "<input type='hidden' name='room_id' value='" . $row['room_id'] . "'>";
+        echo "<input type='hidden' name='time' id='selected-time'>";
+        echo "<input type='hidden' name='cost' id='cost-input'>";
         echo "<label for='date'>Date:</label>";
         echo "<input type='date' id='date' name='date' value='" . $row['date'] . "' min='" . date('Y-m-d') . "'>";
         echo "<br><br>";
         echo "<label for='room_id'>Time (was):</label>";
-        echo "<p>" . $row['time'] . "</p>";
         echo "<button type='button' name='time' value='10:00' onclick='selectTime(\"10:00\", 60)'>10:00 (60 EUR)</button>";
         echo "<button type='button' name='time' value='11:30' onclick='selectTime(\"11:30\", 60)'>11:30 (60 EUR)</button>";
         echo "<button type='button' name='time' value='13:30' onclick='selectTime(\"13:30\", 60)'>13:30 (60 EUR)</button>";
@@ -69,41 +65,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ?>
 
         <script>
-                
-                var discount = <?php echo $row['discount'] ?>;
+                    var discount = <?php echo $row['discount'] ?>;
 
-                function selectTime(time, price) {
+                    function selectTime(time, price) {
                     var selectedTime = time;
                     var total = price;
-                    
-                    totaldiscount = total / 100 * discount ;
-                    total = total - totaldiscount ;
+
+                    totaldiscount = total / 100 * discount;
+                    total = total - totaldiscount;
                     cost = parseFloat(total.toFixed(2));
 
                     document.getElementById("selected-time").innerHTML = selectedTime;
                     document.getElementById("total-price").innerHTML = cost;
+
+                    // Set the selected time and cost in the hidden input fields
+                    document.getElementById("selected-time").value = selectedTime;
+                    document.getElementById("cost-input").value = cost;
+
+                    // Send the cost and selected time to a PHP script using AJAX
+                    $.ajax({
+                        type: "POST",
+                        url: "update_reservation.php",
+                        data: {
+                            cost: cost,
+                            time: selectedTime 
+                        },
+                        success: function (response) {
+                            console.log("Cost and time sent to PHP: " + cost + " " + selectedTime);
+                        },
+                        error: function () {
+                            console.error("AJAX request failed");
+                        }
+                    });
+
                     document.getElementById("payment-modal").style.display = "block";
-
-                    cookie(time);
-                    
-                    // $.ajax({
-                    //     type: "POST",
-                    //     url: "reserve.php",
-                    //     data: { 
-                    //         time: selectedTime, 
-                    //         cost: cost 
-                    //     },
-                    //     success: function(response) {
-                    //         console.log(response);
-                    //     }
-                    // });
-                    
-
                 }
-                function cookie(time){
-                    document.cookie = "time="+time;
-                }
-
             </script>
             <?php
     } else {

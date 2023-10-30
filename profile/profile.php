@@ -1,13 +1,7 @@
 <?php
 include '../includes/header.php';
 
-// подключение к базе данных
-$dbhost = 'localhost';
-$dbname = 'testdb';
-$dbuser = 'root';
-$dbpass = '';
-
-$conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
+include '../includes/dbcon.php';
 
 // проверка подключения
 if (!$conn) {

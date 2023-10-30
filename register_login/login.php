@@ -10,13 +10,7 @@ session_destroy();
 
 session_start();
 
-//connect to database
-$dbhost = 'localhost';
-$dbname = 'testdb';
-$dbuser = 'root';
-$dbpass = '';
-	
-$conn = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
+include '../includes/dbcon.php';
 
 // Check connection
 if ($conn->connect_error) {
