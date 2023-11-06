@@ -10,18 +10,17 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$sql = "SELECT cost, creation_date FROM reservation GROUP BY creation_date";
+$sql = "SELECT SUM(cost) as total_cost, (creation_date) as date FROM reservation GROUP BY creation_date";
 $result = $conn->query($sql);
 
 $dataPoints = array();
 while ($row = $result->fetch_assoc()) {
     $dataPoints[] = array(
-        "x" => strtotime($row['creation_date']) * 1000, // Convert date to timestamp in milliseconds
-        "y" => $row['cost']
+        "x" => strtotime($row['date']) * 1000, // Convert date to timestamp in milliseconds
+        "y" => $row['total_cost']
     );
 }
 
-var_dump($dataPoints);
 
 
 $conn->close();
@@ -45,7 +44,7 @@ $conn->close();
                 axisY: {
                     title: "Total Cost",
                     includeZero: true,
-                    maximum: 100
+                    
                 },
                 data: [{
                     type: "splineArea",
