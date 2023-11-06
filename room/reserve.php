@@ -35,7 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $client_id = $_SESSION['user_id'];
 
     // Check if the logged-in user is an admin or a regular user
-    $query = "INSERT INTO reservation (date, time, cost,payment, room_id, client_id) VALUES ( '$date', '$time', '$cost','$payment', '$room_id' , '$client_id')";
+    $query = "INSERT INTO reservation (date, time, cost, payment, room_id, client_id , creation_date)
+             VALUES ( '$date', '$time', '$cost','$payment', '$room_id' , '$client_id' , CURDATE())";
     
     if (mysqli_query($conn, $query)) {
         echo "Reservation saved successfully!";
