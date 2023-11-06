@@ -21,7 +21,8 @@ while ($row = $result->fetch_assoc()) {
     );
 }
 
-//var_dump($dataPoints);
+var_dump($dataPoints);
+
 
 $conn->close();
 ?>
@@ -44,7 +45,7 @@ $conn->close();
                 axisY: {
                     title: "Total Cost",
                     includeZero: true,
-                    maximum: 1200
+                    maximum: 100
                 },
                 data: [{
                     type: "splineArea",
@@ -56,8 +57,12 @@ $conn->close();
                 }]
             });
 
-            chart.render();
-        }
+            chart.options.data[0].dataPoints.forEach(function (point) {
+            point.y = parseFloat(point.y);
+        });
+
+        chart.render();
+    }
     </script>
 </head>
 <body>
