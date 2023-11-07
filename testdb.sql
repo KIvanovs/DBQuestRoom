@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Окт 31 2023 г., 08:45
+-- Время создания: Ноя 07 2023 г., 11:20
 -- Версия сервера: 10.4.27-MariaDB
 -- Версия PHP: 8.2.0
 
@@ -122,26 +122,30 @@ CREATE TABLE `reservation` (
   `cost` double(4,2) NOT NULL,
   `payment` varchar(128) NOT NULL,
   `room_id` int(11) NOT NULL,
-  `client_id` int(11) NOT NULL
+  `client_id` int(11) NOT NULL,
+  `creation_date` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Дамп данных таблицы `reservation`
 --
 
-INSERT INTO `reservation` (`ID`, `date`, `time`, `cost`, `payment`, `room_id`, `client_id`) VALUES
-(55, '2023-04-27', '13:30', 51.00, 'card', 5, 13),
-(56, '2023-04-27', '13:30', 60.00, 'cash', 6, 13),
-(57, '2023-05-19', '10:00', 60.00, 'cash', 6, 13),
-(58, '2023-04-27', '11:30', 51.00, 'cash', 5, 10),
-(62, '2023-05-27', '14:30', 0.60, 'cash', 3, 18),
-(66, '2023-05-31', '19:00', 0.60, 'cash', 3, 19),
-(69, '2023-11-02', '', 0.00, 'cash', 5, 23),
-(71, '2023-11-03', '', 0.00, 'cash', 5, 23),
-(74, '2023-11-17', '', 0.00, 'cash', 5, 23),
-(81, '2023-11-02', '14:30', 51.00, 'cash', 5, 23),
-(83, '2023-11-30', '22:00', 68.00, 'cash', 5, 23),
-(85, '2023-11-30', '22:00', 72.00, 'card', 14, 23);
+INSERT INTO `reservation` (`ID`, `date`, `time`, `cost`, `payment`, `room_id`, `client_id`, `creation_date`) VALUES
+(55, '2023-04-27', '13:30', 51.00, 'card', 5, 13, '2023-09-06'),
+(56, '2023-04-27', '13:30', 60.00, 'cash', 6, 13, '2023-09-10'),
+(57, '2023-05-19', '10:00', 60.00, 'cash', 6, 13, '2023-09-15'),
+(58, '2023-04-27', '11:30', 51.00, 'cash', 5, 10, '2023-09-15'),
+(62, '2023-05-27', '14:30', 0.60, 'cash', 3, 18, '2023-10-06'),
+(66, '2023-05-31', '19:00', 0.60, 'cash', 3, 19, '2023-10-10'),
+(69, '2023-11-02', '', 0.00, 'cash', 5, 23, '2023-10-11'),
+(71, '2023-11-03', '', 0.00, 'cash', 5, 23, '2023-10-12'),
+(74, '2023-11-17', '', 0.00, 'cash', 5, 23, '2023-10-12'),
+(81, '2023-11-02', '14:30', 51.00, 'cash', 5, 23, '2023-10-12'),
+(83, '2023-11-30', '22:00', 68.00, 'cash', 5, 23, '2023-11-06'),
+(85, '2023-11-30', '22:00', 72.00, 'card', 14, 23, '2023-11-06'),
+(87, '2023-11-09', '16:00', 0.60, 'cash', 3, 24, '2023-11-06'),
+(90, '2023-11-26', '22:00', 80.00, 'cash', 4, 24, '2023-11-06'),
+(92, '2023-11-30', '19:00', 60.00, 'cash', 9, 24, '2023-11-06');
 
 -- --------------------------------------------------------
 
@@ -173,7 +177,8 @@ INSERT INTO `users` (`ID`, `nickname`, `password`, `email`, `name`, `surname`, `
 (18, 'Deniss25', '$2y$10$6tMoGf3BD6OG/rNvMnS0oO.9vtoOzSvadD03OSn8zclIENb1OOj5O', 'deniss25@gmail.com', 'Deniss', 'Kozlovs', 20950694),
 (19, 'Kirils12', '$2y$10$haUkLFA0PyPDRf7hSJcAeut10R2nKF3JUZ4ijeZ1SZ1PLKeQ4HRTi', 'kirils12@gmail.com', 'Kirils', 'Ivanovs', 204050645),
 (21, 'asd', '$2y$10$fu2x33dWOFzvGNeLQye6ZuWH9Ga9nRFprpvqIxlDYvzJZhqD9MnPC', 'asd@gmail.com', 'asd', 'asd', 2147483647),
-(23, 'asdasd', '$2y$10$xETlf4BVvjWZ9QWbOfA4UOGCKfjxtqYgIhFzEWo7KKUJQ8B190gQ.', 'asdasd@gmail.com', 'asdasd', 'asdasd', 2147483647);
+(23, 'asdasd', '$2y$10$xETlf4BVvjWZ9QWbOfA4UOGCKfjxtqYgIhFzEWo7KKUJQ8B190gQ.', 'asdasd@gmail.com', 'asdasd', 'asdasd', 2147483647),
+(24, 'user', '$2y$10$Frb03P90nsLjmcqaJOr0.e8O15jaOoj6y3ykR/BLTqlfXzCXNw.di', 'useruser@user.com', 'user', 'user', 1231233213);
 
 --
 -- Индексы сохранённых таблиц
@@ -239,13 +244,13 @@ ALTER TABLE `quests`
 -- AUTO_INCREMENT для таблицы `reservation`
 --
 ALTER TABLE `reservation`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
