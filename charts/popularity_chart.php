@@ -31,8 +31,8 @@ $conn->close();
 <head>
     <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
     <script>
-        window.onload = function () {
-            var chart = new CanvasJS.Chart("chartContainer", {
+        window.addEventListener('load', function () {
+            var chart = new CanvasJS.Chart("popularityChartContainer", {
                 animationEnabled: true,
                 title: {
                     text: "Number of Visitors per Quest Room"
@@ -46,10 +46,10 @@ $conn->close();
                 }]
             });
             chart.render();
-        }
+        });
     </script>
 </head>
 <body>
-<div id="chartContainer" style="height: 370px; width: 100%;"></div>
+<div id="popularityChartContainer" style="height: 370px; width: 100%;"></div>
 </body>
 </html>         

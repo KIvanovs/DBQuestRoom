@@ -1,6 +1,11 @@
 <?php
 include '../includes/dbcon.php';
 
+function generateRandomFilename($prefix = 'room_image') {
+    $randomNumber = rand(1, 999999999); // You can adjust the range as needed
+    return $prefix . $randomNumber;
+}
+
 if (!$conn) {
 	die("Connection failed: " . mysqli_connect_error());
 }
@@ -57,28 +62,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		exit;
 	}
 
+	
 	// Process uploaded file
-	if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-		$file = $_FILES['photo'];
-		$filename = $file['name'];
-		$filetmp = $file['tmp_name'];
-		$filetype = $file['type'];
-		$filesize = $file['size'];
-		$fileerror = $file['error'];
+    if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+        $file = $_FILES['photo'];
+        $filetype = $file['type'];
 
-		// Проверяем, что файл является изображением
-		$allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
-		if (!in_array($filetype, $allowed_types)) {
-			die('Invalid file type.');
-		}
+        // Check if the file is an image
+        $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+        if (!in_array($filetype, $allowed_types)) {
+            die('Invalid file type.');
+        }
 
-		// Сохраняем файл в папку с картинками
-		$upload_dir = '../images/';
-		$upload_path = $upload_dir . $filename;
-		move_uploaded_file($filetmp, $upload_path);
-	} else {
-		die('Please upload a photo!');
-	}
+        // Generate a random filename
+        $filename = generateRandomFilename();
+
+        // Ensure the filename is unique
+        while (file_exists('../images/' . $filename)) {
+            $filename = generateRandomFilename();
+        }
+
+        $upload_dir = '../images/';
+        $upload_path = $upload_dir . $filename;
+
+        move_uploaded_file($file['tmp_name'], $upload_path);
+    } else {
+        die('Please upload a photo!');
+    }
+	
 		// Insert data into database with photo path
 		$sql = "INSERT INTO quests (name,category, adress, discount, peopleAmount, ageLimit, description, photoPath) VALUES ('$name','$category', '$adress', '$discount' ,'$peopleAmount','$ageLimit','$description', '$upload_path')";
 

@@ -30,7 +30,6 @@ if (mysqli_num_rows($result) > 0) {
         echo "<p><strong>Name:</strong> " . $row['name'] . "</p>";
         echo "<p><strong>Surname:</strong> " . $row['surname'] . "</p>";
         echo "<p><strong>Email:</strong> " . $row['email'] . "</p>";
-        echo "<p><strong>Password:</strong> " . $row['password'] . "</p>";
         echo "<p><strong>Personal Code:</strong> " . $row['personCode'] . "</p>";
         echo "<p><strong>Phone Number:</strong> " . $row['phoneNumber'] . "</p>";
 

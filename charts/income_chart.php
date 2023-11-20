@@ -31,8 +31,8 @@ $conn->close();
 <head>
     <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
     <script>
-        window.onload = function () {
-            var chart = new CanvasJS.Chart("chartContainer", {
+        window.addEventListener('load', function () {
+            var chart = new CanvasJS.Chart("incomeChartContainer", {
                 animationEnabled: true,
                 theme: "light2",
                 title: {
@@ -61,10 +61,10 @@ $conn->close();
         });
 
         chart.render();
-    }
+    });
     </script>
 </head>
 <body>
-<div id="chartContainer" style="height: 370px; width: 100%;"></div>
+<div id="incomeChartContainer" style="height: 370px; width: 100%;"></div>
 </body>
 </html>

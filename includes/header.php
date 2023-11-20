@@ -16,6 +16,7 @@
 					echo "<li><a href='../admin/admin.php'>Admin info</a></li>";
                     echo "<li><a href='../room/quest_form.php'>Add quest room</a></li>";
 					echo "<li><a href='../profile/profile_info.php'>User's info</a></li>";
+					echo "<li><a href='../charts/chart_graphs.php'>Charts</a></li>";
 
 					
 	
