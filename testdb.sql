@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Хост: 127.0.0.1
--- Время создания: Ноя 07 2023 г., 11:20
--- Версия сервера: 10.4.27-MariaDB
--- Версия PHP: 8.2.0
+-- Host: 127.0.0.1
+-- Generation Time: Nov 27, 2023 at 09:51 PM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- База данных: `testdb`
+-- Database: `testdb`
 --
 
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `admin`
+-- Table structure for table `admin`
 --
 
 CREATE TABLE `admin` (
@@ -38,7 +38,7 @@ CREATE TABLE `admin` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Дамп данных таблицы `admin`
+-- Dumping data for table `admin`
 --
 
 INSERT INTO `admin` (`ID`, `name`, `surname`, `email`, `password`, `personCode`, `phoneNumber`) VALUES
@@ -54,7 +54,7 @@ INSERT INTO `admin` (`ID`, `name`, `surname`, `email`, `password`, `personCode`,
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `comment`
+-- Table structure for table `comment`
 --
 
 CREATE TABLE `comment` (
@@ -65,7 +65,7 @@ CREATE TABLE `comment` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Дамп данных таблицы `comment`
+-- Dumping data for table `comment`
 --
 
 INSERT INTO `comment` (`ID`, `comment`, `user_id`, `admin_id`) VALUES
@@ -77,7 +77,7 @@ INSERT INTO `comment` (`ID`, `comment`, `user_id`, `admin_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `quests`
+-- Table structure for table `quests`
 --
 
 CREATE TABLE `quests` (
@@ -93,7 +93,7 @@ CREATE TABLE `quests` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Дамп данных таблицы `quests`
+-- Dumping data for table `quests`
 --
 
 INSERT INTO `quests` (`ID`, `name`, `adress`, `discount`, `peopleAmount`, `ageLimit`, `description`, `category`, `photoPath`) VALUES
@@ -107,12 +107,13 @@ INSERT INTO `quests` (`ID`, `name`, `adress`, `discount`, `peopleAmount`, `ageLi
 (10, 'Sherlock Holmes and royal treasures', 'Zigfrīda Annas Meierovica bulvāris 14', 15, '2-5', 12, 'From the royal Treasury regularly lost jewellery. Group of villains within 60 minutes get into Treasury and disappear without a trace. All in despair. They decided to call for help Sherlock Holmes.\r\n\r\n ', 'By Movie', '../images/karaliskie_dargumi3.jpg.1200x500_q85_crop-smart_upscale.jpg'),
 (11, 'Titanic', 'Kalku iela 11a', 0, '2-6', 5, '“Titanic”-yes, the same old Titanic! – collided with an iceberg and sinks to the bottom. It means that after putting on your life vest, it is time to take a seat at a lifeboat. But... You got fastened with the handcuffs to the pipe in a radio cabin at a lower deck and you are given only 60 minutes to avoid your inevitable death!...', 'By Movie', '../images/04939435-ca42-43fa-b678-bba0fa0153db.jpg.1200x500_q85_crop-smart_upscale.jpg'),
 (13, 'Lottery Robbery', 'Puskina iela 1a', 0, '2-6', 3, 'Forget everything you have seen before. Quest takes escape-room games to a whole new level. Now, the usual opening of locks and searching of safe codes will not be enough – you’ll be surprised with how many incredible wow-effects do engineering riddles hold. And of course you simply cannot do without a core set of each questman – logic, intelligence and quick wit.', 'Detective', '../images/kwest_laupisana_pLDC92e.jpg.1200x500_q85_crop-smart_upscale.jpg'),
-(14, 'House 12', 'Adrese iela 2', 10, '2-9', 12, 'You woke up in the slaughterhouse maniac and you realize that it has become prey. He fastened the handcuffs you around solid blood, and heard the cries of the victims in the distance. After a while, after hitting an ax, shouting disappear ... Do you realize that you do not want that would you all so over and you at any cost necessary to vybratsya. Think of how to do it, otherwise your fate will be the same.', 'Horror', '../images/99a6cf68-1823-4a48-83cb-b18f188b77d8-spooky-homes-around-the-world-moulthrop-house.jpg');
+(14, 'House 12', 'Adrese iela 2', 10, '2-9', 12, 'You woke up in the slaughterhouse maniac and you realize that it has become prey. He fastened the handcuffs you around solid blood, and heard the cries of the victims in the distance. After a while, after hitting an ax, shouting disappear ... Do you realize that you do not want that would you all so over and you at any cost necessary to vybratsya. Think of how to do it, otherwise your fate will be the same.', 'Horror', '../images/99a6cf68-1823-4a48-83cb-b18f188b77d8-spooky-homes-around-the-world-moulthrop-house.jpg'),
+(21, 'asd', 'asd', 5, '5-9', 12, 'asdasd', 'asd', '../images/room_image470367743');
 
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `reservation`
+-- Table structure for table `reservation`
 --
 
 CREATE TABLE `reservation` (
@@ -127,7 +128,7 @@ CREATE TABLE `reservation` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Дамп данных таблицы `reservation`
+-- Dumping data for table `reservation`
 --
 
 INSERT INTO `reservation` (`ID`, `date`, `time`, `cost`, `payment`, `room_id`, `client_id`, `creation_date`) VALUES
@@ -150,7 +151,7 @@ INSERT INTO `reservation` (`ID`, `date`, `time`, `cost`, `payment`, `room_id`, `
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
@@ -164,7 +165,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Дамп данных таблицы `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`ID`, `nickname`, `password`, `email`, `name`, `surname`, `phoneNumber`) VALUES
@@ -181,17 +182,17 @@ INSERT INTO `users` (`ID`, `nickname`, `password`, `email`, `name`, `surname`, `
 (24, 'user', '$2y$10$Frb03P90nsLjmcqaJOr0.e8O15jaOoj6y3ykR/BLTqlfXzCXNw.di', 'useruser@user.com', 'user', 'user', 1231233213);
 
 --
--- Индексы сохранённых таблиц
+-- Indexes for dumped tables
 --
 
 --
--- Индексы таблицы `admin`
+-- Indexes for table `admin`
 --
 ALTER TABLE `admin`
   ADD PRIMARY KEY (`ID`);
 
 --
--- Индексы таблицы `comment`
+-- Indexes for table `comment`
 --
 ALTER TABLE `comment`
   ADD PRIMARY KEY (`ID`),
@@ -199,13 +200,13 @@ ALTER TABLE `comment`
   ADD KEY `Test` (`user_id`);
 
 --
--- Индексы таблицы `quests`
+-- Indexes for table `quests`
 --
 ALTER TABLE `quests`
   ADD PRIMARY KEY (`ID`);
 
 --
--- Индексы таблицы `reservation`
+-- Indexes for table `reservation`
 --
 ALTER TABLE `reservation`
   ADD PRIMARY KEY (`ID`),
@@ -213,58 +214,58 @@ ALTER TABLE `reservation`
   ADD KEY `RoomID` (`room_id`);
 
 --
--- Индексы таблицы `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`ID`);
 
 --
--- AUTO_INCREMENT для сохранённых таблиц
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT для таблицы `admin`
+-- AUTO_INCREMENT for table `admin`
 --
 ALTER TABLE `admin`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
--- AUTO_INCREMENT для таблицы `comment`
+-- AUTO_INCREMENT for table `comment`
 --
 ALTER TABLE `comment`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
--- AUTO_INCREMENT для таблицы `quests`
+-- AUTO_INCREMENT for table `quests`
 --
 ALTER TABLE `quests`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
--- AUTO_INCREMENT для таблицы `reservation`
+-- AUTO_INCREMENT for table `reservation`
 --
 ALTER TABLE `reservation`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
 
 --
--- AUTO_INCREMENT для таблицы `users`
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
--- Ограничения внешнего ключа сохраненных таблиц
+-- Constraints for dumped tables
 --
 
 --
--- Ограничения внешнего ключа таблицы `comment`
+-- Constraints for table `comment`
 --
 ALTER TABLE `comment`
   ADD CONSTRAINT `AdminID` FOREIGN KEY (`admin_id`) REFERENCES `admin` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `Test` FOREIGN KEY (`user_id`) REFERENCES `users` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Ограничения внешнего ключа таблицы `reservation`
+-- Constraints for table `reservation`
 --
 ALTER TABLE `reservation`
   ADD CONSTRAINT `ClientID` FOREIGN KEY (`client_id`) REFERENCES `users` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE,
