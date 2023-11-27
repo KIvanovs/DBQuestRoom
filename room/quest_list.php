@@ -2,7 +2,8 @@
 <html>
 <head>
   <title>Card Example</title>
-  <link rel="stylesheet" type="text/css" href="../css/home.css">
+  
+  <link rel="stylesheet" type="text/css" href="../css/home_page.css">
   <script src="../js/script.js"></script>
 </head>
 <body>
@@ -98,36 +99,37 @@
   if(isset($_GET['search'])) {
     echo "<p>Search results for '{$_GET['search']}':</p>";
   }
+ ?>
 
-  // Display each quest as a card
-  while ($row = mysqli_fetch_assoc($result)) {
-    $id = $row['ID'];
-    $name = $row['name'];
-    $category = $row['category'];
-    $address = $row['adress'];
-    $discount = $row['discount'];
-    $peopleAmount = $row['peopleAmount'];
-    $ageLimit = $row['ageLimit'];
-    $description = $row['description'];
-    $photoPath = $row['photoPath'];
+  <div class="cards-wrapper">
+  <?php
+    // Display each quest as a card
+    while ($row = mysqli_fetch_assoc($result)) {
+      $id = $row['ID'];
+      $name = $row['name'];
+      $category = $row['category'];
+      $address = $row['adress'];
+      $discount = $row['discount'];
+      $peopleAmount = $row['peopleAmount'];
+      $ageLimit = $row['ageLimit'];
+      $description = $row['description'];
+      $photoPath = $row['photoPath'];
 
-    echo '<div class="card" data-category="' . $category . '" data-age-limit="' . $ageLimit . '" data-people-amount="' . $peopleAmount . '">';
-    echo '<div class="card-image">';
-	echo '<img src="' . $photoPath . '" alt="photo of ' . $name . '">';
-	echo '</div>';
-	echo '<div class="card-content">';
-	echo '<h2>' . $name . '</h2>';
-	echo '<h3>' . $ageLimit . ' +</h3>';
-	echo '<h4>' . $peopleAmount . ' </h4>';
-	echo '<h5>' . $category . ' </h5>';
-	echo '<a href="../room/quest_info.php?ID=' . $id . '" class="btn">Read More</a>';
-	echo '</div>';
-	echo '</div>';
-	}
-	
-	// Close database connection
-	mysqli_close($conn);
-	?>
+      // Wrap the entire card content in an anchor tag
+      echo '<a href="../room/quest_info.php?ID=' . $id . '" class="card" data-category="' . $category . '" data-age-limit="' . $ageLimit . '" data-people-amount="' . $peopleAmount . '">';
+      echo '<div class="card-image">';
+      echo '<img src="' . $photoPath . '" alt="photo of ' . $name . '">';
+      echo '</div>';
+      echo '<div class="card-content">';
+      echo '<h2>' . $name . '</h2>';
+      echo '<h3>' . $ageLimit . ' +</h3>';
+      echo '<h4>' . $peopleAmount . ' </h4>';
+      echo '<h5>' . $category . ' </h5>';
+      echo '</div>';
+      echo '</a>';
+    }
+    ?>
+	</div>
 	
 	</body>
 	</html> 
