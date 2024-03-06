@@ -11,15 +11,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 		$quest_id = $_GET['ID'];
 
 		// Select quest from the database
-		$query = "SELECT * FROM quests WHERE ID='$quest_id'";
+		
+        $query = "SELECT q.ID, q.name, q.peopleAmount, q.description, q.photoPath,
+                  a.buildingAdress, 
+                  qc.ageLimit, qc.categoryName
+              FROM quests q
+              LEFT JOIN adress a ON q.adress_id = a.ID
+              LEFT JOIN questcategory qc ON q.questCategory_id = qc.ID  WHERE q.ID='$quest_id'";
 		$result = mysqli_query($conn, $query);
 
 		if (mysqli_num_rows($result) > 0) {
 			$row = mysqli_fetch_assoc($result);
 			$name = $row['name'];
-			$category = $row['category'];
-			$address = $row['adress'];
-			$discount = $row['discount'];
+			$category = $row['categoryName'];
+			$address = $row['buildingAdress'];
 			$peopleAmount = $row['peopleAmount'];
 			$ageLimit = $row['ageLimit'];
 			$description = $row['description'];
@@ -51,7 +56,6 @@ mysqli_close($conn);
             <h2><?php echo $name; ?></h2>
             <p>Category: <?php echo $category; ?></p>
             <p>Address: <?php echo $address; ?></p>
-            <p>Discount: <?php echo $discount; ?> %</p>
             <p>Number of people: <?php echo $peopleAmount; ?></p>
             <p>Age limit: <?php echo $ageLimit; ?></p>
             <p>Description: <?php echo $description; ?></p>
@@ -65,22 +69,39 @@ mysqli_close($conn);
                 <input type="date" name="date" id="date" min="<?php echo date('Y-m-d'); ?>" required>
                 <br><br>
                 <label>Time:</label><br>
-                <button type="button" name="time" value="10:00" onclick="selectTime('10:00', 60)">10:00 (60 EUR)</button>
-                <button type="button" name="time" value="11:30" onclick="selectTime('11:30', 60)">11:30 (60 EUR)</button>
-                <button type="button" name="time" value="13:30" onclick="selectTime('13:30', 60)">13:30 (60 EUR)</button>
-                <button type="button" name="time" value="14:30" onclick="selectTime('14:30', 60)">14:30 (60 EUR)</button>
-                <button type="button" name="time" value="16:00" onclick="selectTime('16:00', 60)">16:00 (60 EUR)</button>
-                <button type="button" name="time" value="17:30" onclick="selectTime('17:30', 60)">17:30 (60 EUR)</button>
-                <button type="button" name="time" value="19:00" onclick="selectTime('19:00', 60)">19:00 (60 EUR)</button>
-                <button type="button" name="time" value="20:30" onclick="selectTime('20:30', 80)">20:30 (80 EUR)</button>
-                <button type="button" name="time" value="22:00" onclick="selectTime('22:00', 80)">22:00 (80 EUR)</button>
+                <?php
+                    include '../includes/dbcon.php';
+
+                    // Проверяем соединение
+                    if (!$conn) {
+                        die("Connection failed: " . mysqli_connect_error());
+                    }
+
+                    // Выполняем запрос к базе данных для получения данных о времени и цене
+                    $query = "SELECT timePeriod, cost FROM prices";
+                    $result = mysqli_query($conn, $query);
+
+                    // Обрабатываем результаты запроса
+                    if (mysqli_num_rows($result) > 0) {
+                        // Выводим кнопки на основе данных из таблицы prices
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            $time = $row['timePeriod'];
+                            $cost = $row['cost'];
+                            echo "<button type='button' name='time' value='$time' onclick='selectTime(\"$time\", $cost)'>$time ($cost EUR)</button>";
+                        }
+                    } else {
+                        echo "No results";
+                    }
+
+                    // Закрываем соединение с базой данных
+                    mysqli_close($conn);
+                ?>
                 <br><br>
                 <div id="payment-modal" class="modal">
                     <div class="modal-content">
                         <h2>Payment</h2>
-                        <p>You have selected:</p>
-                        <p id="selected-time"></p>
-                        <p>Total price: <span id="total-price"></span> EUR</p>
+                        <p>You have selected:<span id="timePeriod"></span></p>
+                        <p>Total price: <span id="cost"></span></p>
                         <label for="payment-method">Payment method:</label>
                         <select id="payment-method" name="payment_method">
                             <option value="cash">Cash</option>
@@ -92,42 +113,15 @@ mysqli_close($conn);
             </form>
 
             <script>
-            var discount = <?php echo $row['discount'] ?>;
-
-            function selectTime(time, price) {
-            var selectedTime = time;
-            var total = price;
-
-            totaldiscount = total / 100 * discount;
-            total = total - totaldiscount;
-            cost = parseFloat(total.toFixed(2));
-
-            document.getElementById("selected-time").innerHTML = selectedTime;
-            document.getElementById("total-price").innerHTML = cost;
-
-            // Set the selected time and cost in the hidden input fields
-            document.getElementById("selected-time").value = selectedTime;
-            document.getElementById("cost-input").value = cost;
-
-            // Send the cost and selected time to a PHP
-            $.ajax({
-                type: "POST",
-                url: "reserve.php",
-                data: {
-                    cost: cost,
-                    time: selectedTime 
-                },
-                success: function (response) {
-                    console.log("Cost and time sent to PHP: " + cost + " " + selectedTime);
-                },
-                error: function () {
-                    console.error("AJAX request failed");
+                function selectTime(time, cost) {
+                    // Установка выбранного времени и цены в блоке оплаты
+                    document.getElementById("timePeriod").textContent = time;
+                    document.getElementById("cost").textContent =  cost + " EUR";
+                    
+                    // Показ блока оплаты
+                    document.getElementById("payment-modal").style.display = "block";
                 }
-            });
-
-            document.getElementById("payment-modal").style.display = "block";
-        }
-        </script>
+            </script>
         </div>
     </div>
 </body>

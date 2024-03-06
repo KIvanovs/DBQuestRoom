@@ -37,12 +37,12 @@
   }
 
   	// Select all categories from the database
-	$query = "SELECT DISTINCT category FROM quests";
+	$query = "SELECT DISTINCT categoryName FROM questcategory";
 	$result = mysqli_query($conn, $query);
 	$categories = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 	// Select all age limits from the database
-	$query = "SELECT DISTINCT ageLimit FROM quests ORDER BY ageLimit DESC";
+	$query = "SELECT DISTINCT ageLimit FROM questcategory ORDER BY ageLimit DESC";
 	$result = mysqli_query($conn, $query);
 	$ageLimits = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
@@ -88,9 +88,22 @@
   // Select all quests from the database, or search for a specific quest if a search query was submitted
   if(isset($_GET['search'])) {
     $search = mysqli_real_escape_string($conn, $_GET['search']);
-    $query = "SELECT * FROM quests WHERE name LIKE '%$search%'";
+    $query = "SELECT q.ID, q.name, q.peopleAmount, q.description, q.photoPath,
+                  a.buildingAdress, 
+                  qc.ageLimit, qc.categoryName
+              FROM quests q
+              LEFT JOIN adress a ON q.adress_id = a.ID
+              LEFT JOIN questcategory qc ON q.questCategory_id = qc.ID
+              WHERE q.name LIKE '%$search%'";
+
+
   } else {
-    $query = "SELECT * FROM quests";
+    $query = "SELECT q.ID, q.name, q.peopleAmount, q.description, q.photoPath,
+                  a.buildingAdress, 
+                  qc.ageLimit, qc.categoryName
+              FROM quests q
+              LEFT JOIN adress a ON q.adress_id = a.ID
+              LEFT JOIN questcategory qc ON q.questCategory_id = qc.ID";
   }
 
   $result = mysqli_query($conn, $query);
@@ -103,13 +116,13 @@
 
   <div class="cards-wrapper">
   <?php
+  echo $query;
     // Display each quest as a card
     while ($row = mysqli_fetch_assoc($result)) {
       $id = $row['ID'];
       $name = $row['name'];
-      $category = $row['category'];
-      $address = $row['adress'];
-      $discount = $row['discount'];
+      $category = $row['categoryName'];
+      $address = $row['buildingAdress'];
       $peopleAmount = $row['peopleAmount'];
       $ageLimit = $row['ageLimit'];
       $description = $row['description'];

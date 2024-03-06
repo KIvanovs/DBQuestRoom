@@ -1,6 +1,6 @@
 
 function filterAll() {
-  var category = document.getElementById('category').value;
+  var category = document.getElementById('categoryName').value;
   var ageLimit = document.getElementById('ageLimit').value;
   var peopleAmount = document.getElementById('peopleAmount').value;
   var cards = document.querySelectorAll('.card');

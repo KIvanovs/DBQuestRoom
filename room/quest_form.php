@@ -18,9 +18,6 @@
 		<label for="adress">Address:</label>
 		<input type="text" name="adress" required><br><br>
 
-		<label for="discount">Discount:</label>
-		<input type="text" name="discount" required><br><br>
-
 		<label for="peopleAmount">People Amount:</label>
 		<input type="text" name="peopleAmount" required><br><br>
 
@@ -44,7 +41,6 @@
       <th>Name</th>
       <th>Category</th>
       <th>Address</th>
-      <th>Discount</th>
       <th>People Amount</th>
       <th>Age Limit</th>
       <th>Description</th>
@@ -72,43 +68,34 @@
 	  }
 	
 	  // Выполняем запрос к базе данных для получения данных о комнатах
-	  $query = "SELECT * FROM quests";
+	  $query = "SELECT q.ID, q.name, qc.categoryName, a.buildingAdress, q.peopleAmount, qc.ageLimit, q.description, q.photoPath FROM quests q
+                    LEFT JOIN questcategory qc ON q.questCategory_id = qc.ID
+                    LEFT JOIN adress a ON q.adress_id = a.ID";
 	  $result = mysqli_query($conn, $query);
 	
 	  // Обрабатываем результаты запроса
 	  if (mysqli_num_rows($result) > 0) {
 		while ($row = mysqli_fetch_assoc($result)) {
-		  // Получаем данные о комнате
-		  $id = $row['ID'];
-		  $name = $row['name'];
-		  $category = $row['category'];
-		  $address = $row['adress'];
-		  $discount = $row['discount'];
-		  $peopleAmount = $row['peopleAmount'];
-		  $ageLimit = $row['ageLimit'];
-		  $description = $row['description'];
-		  $photoPath = $row['photoPath'];
 	
 		  // Выводим данные о комнате в таблицу
 		  echo "<tr>";
-		  echo "<td>$id</td>";
-		  echo "<td>$name</td>";
-		  echo "<td>$category</td>";
-		  echo "<td>$address</td>";
-		  echo "<td>$discount %</td>";
-		  echo "<td>$peopleAmount</td>";
-		  echo "<td>$ageLimit +</td>";
-		  echo "<td>$description</td>";
-		  echo "<td>$photoPath</td>";
-		  echo "<td><img src= '$photoPath' alt='Room photo' style='max-width: 200px; max-height: 200px;'></td>";
+		  echo "<td>".$row['ID']."</td>";
+		  echo "<td>".$row['name']."</td>";
+		  echo "<td>".$row['categoryName']."</td>";
+		  echo "<td>".$row['buildingAdress']."</td>";
+		  echo "<td>".$row['peopleAmount']."</td>";
+		  echo "<td>".$row['ageLimit']."</td>";
+		  echo "<td>".$row['description']."</td>";
+		  echo "<td>".$row['photoPath']."</td>";
+		  echo "<td><img src='".$row['photoPath']."' alt='Quest photo' style='max-width: 200px; max-height: 200px;'></td>";
 		  echo "<td>";
-		  echo "<form action='../room/update_room.php' method='POST'>";
+		  echo "<form action='../room/update_quest.php' method='POST'>";
 		  echo "<input type='hidden' name='id' value='" . $row['ID'] . "'>";
 		  echo "<button type='submit'>Update</button>";
 		  echo "</form>";
 		  echo "</td>";
 		  echo "<td>";
-		  echo "<form action='../room/delete_room.php' method='POST'>";
+		  echo "<form action='../room/delete_quest.php' method='POST'>";
 		  echo "<input type='hidden' name='id' value='" . $row['ID'] . "'>";
 		  echo "<button type='submit'>Delete</button>";
 		  echo "</form>";

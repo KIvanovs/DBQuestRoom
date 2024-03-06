@@ -61,9 +61,17 @@ if(isset($_POST['update_room'])){
 		exit();
 	}
 
-    function saveImage($file){
+
+    function saveImage($file, $oldFilePath)
+    {
         $target_dir = "images/";
         $target_file = $target_dir . basename($file['name']);
+
+        // Delete old image
+        if (!empty($oldFilePath) && file_exists($oldFilePath)) {
+            unlink($oldFilePath);
+        }
+
         if (move_uploaded_file($file['tmp_name'], $target_file)) {
             return $target_file;
         } else {
@@ -71,30 +79,19 @@ if(isset($_POST['update_room'])){
         }
     }
 
+    $photoPath = $_POST['photoPath'];
+
     // Handle photo upload
     if ($_FILES['photo']['name'] != '') {
-        $photoPath = saveImage($_FILES['photo']);
-    } else {
-        $photoPath = $_POST['photoPath'];
+        $photoPath = saveImage($_FILES['photo'], $photoPath);
     }
 
-    // Check for duplicate name
-	$query = "SELECT * FROM quests WHERE name='$name'";
-	$result = mysqli_query($conn, $query);
-
-	if (mysqli_num_rows($result) > 0) {
-		echo "Quest with this name already exists!";
-		exit;
-	}
-
-    // Update data in database
     $query = "UPDATE quests SET name='$name', category='$category', adress='$address', discount='$discount', peopleAmount='$peopleAmount', ageLimit='$ageLimit', description='$description', photoPath='" . mysqli_real_escape_string($conn, $photoPath) . "' WHERE ID='$room_id'";
 
-
-    if(mysqli_query($conn, $query)){
+    if (mysqli_query($conn, $query)) {
         header("Location: ../room/quest_form.php");
         exit();
-    } else{
+    } else {
         echo "Error updating room: " . mysqli_error($conn);
     }
 }

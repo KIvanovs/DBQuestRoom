@@ -13,26 +13,21 @@ if (!$conn) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	// Get form data
 	$name = mysqli_real_escape_string($conn, $_POST['name']);
-	$adress = $_POST['adress'];
-	$category = $_POST['category'];
-	$discount = $_POST['discount'];
-	$peopleAmount = $_POST['peopleAmount'];
-	$ageLimit = $_POST['ageLimit'];
-	$description = mysqli_real_escape_string($conn, $_POST['description']);
+    $adress = mysqli_real_escape_string($conn, $_POST['adress']); // Escape the address string
+    $category = mysqli_real_escape_string($conn, $_POST['category']); // Escape the category string
+    $peopleAmount = $_POST['peopleAmount'];
+    $ageLimit = $_POST['ageLimit'];
+    $description = mysqli_real_escape_string($conn, $_POST['description']);
 
 
 	// Validate form data
-	if (!is_numeric($discount) || $discount < 0 || $discount > 100) {
-		echo "Discount should be a number between 0 and 100!";
-		exit();
-	}
 
 	if (empty($name) || empty($category) || empty($adress) || empty($peopleAmount) || empty($ageLimit) || empty($description)) {
 		echo "Please fill in all fields!";
 		exit();
 	}
 	  
-	if (strlen($name) > 50 || strlen($category) > 30 || strlen($adress) > 50 || strlen($discount) > 30 || strlen($peopleAmount) > 30 || strlen($ageLimit) > 30 || strlen($description) > 500) {
+	if (strlen($name) > 50 || strlen($category) > 30 || strlen($adress) > 50 || strlen($peopleAmount) > 30 || strlen($ageLimit) > 30 || strlen($description) > 500) {
 		echo "Too long text, maximum 30 symbols for the name, category, address, discount and peopleAmount and maximum 500 symbols for the description!";
 		exit();
 	}
@@ -90,16 +85,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die('Please upload a photo!');
     }
 	
-		// Insert data into database with photo path
-		$sql = "INSERT INTO quests (name,category, adress, discount, peopleAmount, ageLimit, description, photoPath) VALUES ('$name','$category', '$adress', '$discount' ,'$peopleAmount','$ageLimit','$description', '$upload_path')";
-
-	if (mysqli_query($conn, $sql)) {
-		echo "New quest added successfully!";
-		echo "<a href=../room/quest_form.php>Back to quests info page<a> ";
-	} else {
-		echo "Error: " . mysqli_error($conn);
-	}
-}
+	 // Insert data into 'adress' table
+	 $sql_insert_adress = "INSERT INTO adress (buildingAdress) VALUES ('$adress')";
+	 if (mysqli_query($conn, $sql_insert_adress)) {
+		 // Get the ID of the inserted address
+		 $adress_id = mysqli_insert_id($conn);
+ 
+		 // Insert data into 'questcategory' table
+		 $sql_insert_questcategory = "INSERT INTO questcategory (ageLimit, categoryName) VALUES ('$ageLimit', '$category')";
+		 if (mysqli_query($conn, $sql_insert_questcategory)) {
+			 // Get the ID of the inserted category
+			 $questcategory_id = mysqli_insert_id($conn);
+ 
+			 // Insert data into 'quests' table with photo path, address_id, and questcategory_id
+			 $sql_insert_quest = "INSERT INTO quests (name, peopleAmount, description, photoPath, adress_id, questCategory_id) VALUES ('$name', '$peopleAmount', '$description', '$upload_path', '$adress_id', '$questcategory_id')";
+			 if (mysqli_query($conn, $sql_insert_quest)) {
+				 echo "New quest added successfully!";
+				 echo "<a href=../room/quest_form.php>Back to quests info page<a> ";
+			 } else {
+				 echo "Error inserting into 'quests' table: " . mysqli_error($conn);
+			 }
+		 } else {
+			 echo "Error inserting into 'questcategory' table: " . mysqli_error($conn);
+		 }
+	 } else {
+		 echo "Error inserting into 'adress' table: " . mysqli_error($conn);
+	 }
+ }
 
 // Close database connection
 mysqli_close($conn);
