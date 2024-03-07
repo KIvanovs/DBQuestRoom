@@ -46,6 +46,14 @@ mysqli_close($conn);
 <head>
     <title><?php echo $name; ?></title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .selected {
+            background-color: yellow; /* Цвет выделенной кнопки */
+        }
+        .selected-button {
+            background-color: green; /* Цвет выбранной кнопки */
+        }
+    </style>
 </head>
 <body>
     <div class="card">
@@ -87,7 +95,7 @@ mysqli_close($conn);
                         while ($row = mysqli_fetch_assoc($result)) {
                             $time = $row['timePeriod'];
                             $cost = $row['cost'];
-                            echo "<button type='button' name='time' value='$time' onclick='selectTime(\"$time\", $cost)'>$time ($cost EUR)</button>";
+                            echo "<button type='button' name='time' value='$time' onclick='selectTime(\"$time\", $cost, this)'>$time ($cost EUR)</button>";
                         }
                     } else {
                         echo "No results";
@@ -113,11 +121,39 @@ mysqli_close($conn);
             </form>
 
             <script>
-                function selectTime(time, cost) {
+                function selectTime(time, cost, button) {
                     // Установка выбранного времени и цены в блоке оплаты
                     document.getElementById("timePeriod").textContent = time;
-                    document.getElementById("cost").textContent =  cost + " EUR";
-                    
+                    document.getElementById("cost").textContent = cost + " EUR";
+
+                    // Установка выбранной кнопке класса для изменения стиля
+                    var buttons = document.querySelectorAll('button[name="time"]');
+                    buttons.forEach(function(btn) {
+                        btn.classList.remove('selected-button'); // Удаление класса у всех кнопок
+                    });
+                    button.classList.add('selected-button'); // Добавление класса выбранной кнопке
+
+
+                    // Set the selected time and cost in the hidden input fields
+                    document.getElementById("selected-time").value = time;
+                    document.getElementById("cost-input").value = cost;
+
+                    // Send the cost and selected time to a PHP
+                    $.ajax({
+                        type: "POST",
+                        url: "reserve.php",
+                        data: {
+                            cost: cost,
+                            time: time 
+                        },
+                        success: function (response) {
+                            console.log("Cost and time sent to PHP: " + cost + " " + time);
+                        },
+                        error: function () {
+                            console.error("AJAX request failed");
+                        }
+                    });
+
                     // Показ блока оплаты
                     document.getElementById("payment-modal").style.display = "block";
                 }

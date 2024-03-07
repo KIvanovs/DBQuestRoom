@@ -27,10 +27,11 @@ if (mysqli_num_rows($user_result) > 0) {
   echo "<p>Phone number: {$user_row['phoneNumber']}</p>";
   
   // запрос для получения данных о резервациях пользователя
-  $reservation_query = "SELECT r.date, r.time, r.cost, r.payment, q.name, q.adress
-                        FROM reservation r
-                        INNER JOIN quests q ON r.room_id = q.id
-                        WHERE r.client_id = $user_id";
+  $reservation_query = "SELECT res.date, res.time, res.cost, res.payment, q.name, adr.buildingAdress AS adress
+                        FROM reservation AS res
+                        INNER JOIN quests AS q ON res.room_id = q.ID
+                        INNER JOIN adress AS adr ON q.adress_id = adr.ID
+                        WHERE res.client_id = $user_id";
   $reservation_result = mysqli_query($conn, $reservation_query);
   
   // проверка наличия данных о резервациях
@@ -40,7 +41,7 @@ if (mysqli_num_rows($user_result) > 0) {
     
     // вывод данных о резервациях
     while ($reservation_row = mysqli_fetch_assoc($reservation_result)) {
-      echo "<li>Date: {$reservation_row['date']} | Time: {$reservation_row['time']} | Cost: {$reservation_row['cost']} | Quest: {$reservation_row['name']} ({$reservation_row['adress']}) | Payment type: {$reservation_row['payment']}</li><br><br>";
+      echo "<li>Date: {$reservation_row['date']} | Time: {$reservation_row['time']} | Cost: {$reservation_row['cost']} | Quest: {$reservation_row['name']} | Adress: ({$reservation_row['adress']}) | Payment type: {$reservation_row['payment']}</li><br><br>";
     }
     
     echo "</ul>";

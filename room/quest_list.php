@@ -4,7 +4,7 @@
   <title>Card Example</title>
   
   <link rel="stylesheet" type="text/css" href="../css/home_page.css">
-  <script src="../js/script.js"></script>
+  <script src="../js/filter.js"></script>
 </head>
 <body>
   <?php
@@ -55,30 +55,30 @@
 	mysqli_free_result($result);
 	?>
 
-	<div class="filter-bar">
-		<label for="category">Category:</label>
-		<select id="category" onchange="filterAll()">
-		<option value="">All</option>
-		<?php foreach($categories as $category): ?>
-			<option value="<?php echo $category['category']; ?>"><?php echo $category['category']; ?></option>
-		<?php endforeach; ?>
-		</select>
+  <div class="filter-bar">
+  <label for="category">Category:</label>
+    <select id="category" onchange="filterCards()">
+    <option value="">All</option>
+    <?php foreach($categories as $category): ?>
+        <option value="<?php echo $category['categoryName']; ?>"><?php echo $category['categoryName']; ?></option>
+    <?php endforeach; ?>
+    </select>
 
-		<label for="ageLimit">Age Limit:</label>
-		<select id="ageLimit" onchange="filterAll()">
-		<option value="">All</option>
-		<?php foreach($ageLimits as $ageLimit): ?>
-			<option value="<?php echo $ageLimit['ageLimit']; ?>"><?php echo $ageLimit['ageLimit']; ?>+</option>
-		<?php endforeach; ?>
-		</select>
+    <label for="ageLimit">Age Limit:</label>
+    <select id="ageLimit" onchange="filterCards()">
+    <option value="">All</option>
+    <?php foreach($ageLimits as $ageLimit): ?>
+        <option value="<?php echo $ageLimit['ageLimit']; ?>"><?php echo $ageLimit['ageLimit']; ?>+</option>
+    <?php endforeach; ?>
+    </select>
 
-		<label for="peopleAmount">People Amount:</label>
-		<select id="peopleAmount" onchange="filterAll()">
-		<option value="">All</option>
-		<?php foreach($peopleAmounts as $peopleAmount): ?>
-			<option value="<?php echo $peopleAmount['peopleAmount']; ?>"><?php echo $peopleAmount['peopleAmount']; ?></option>
-		<?php endforeach; ?>
-		</select>
+    <label for="peopleAmount">People Amount:</label>
+    <select id="peopleAmount" onchange="filterCards()">
+    <option value="">All</option>
+    <?php foreach($peopleAmounts as $peopleAmount): ?>
+        <option value="<?php echo $peopleAmount['peopleAmount']; ?>"><?php echo $peopleAmount['peopleAmount']; ?></option>
+    <?php endforeach; ?>
+    </select>
 	</div>
 
 
