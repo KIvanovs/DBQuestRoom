@@ -1,14 +1,26 @@
 <?php
 include '../includes/dbcon.php';
 
+    $name = "";
+    $category = "";
+    $address = "";
+    $peopleAmount = "";
+    $ageLimit = "";
+    $description = "";
+    $photoPath = "";
+
+    // Function to escape user input
+function escape_input($input) {
+    global $conn;
+    return mysqli_real_escape_string($conn, $input);
+}
+
 if (!$conn) {
 	die("Connection failed: " . mysqli_connect_error());
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-	// Get quest ID from URL query string
-	if (isset($_GET['ID'])) {
-		$quest_id = $_GET['ID'];
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['ID'])) {
+    $quest_id = mysqli_real_escape_string($conn, $_GET['ID']);
 
 		// Select quest from the database
 		
@@ -32,13 +44,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 		} else {
 			die("Quest not found!");
 		}
-	} else {
-		die("Invalid request!");
-	}
 }
 
 // Close database connection
 mysqli_close($conn);
+
+// Handle comment submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
+    include '../includes/dbcon.php'; // Reconnect to the database
+
+    if (!$conn) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+
+    $comment = mysqli_real_escape_string($conn, $_POST['comment']);
+    $quest_id = mysqli_real_escape_string($conn, $_POST['quest_id']);
+
+    // Insert comment into the database
+    $insert_query = "INSERT INTO comment (comment, user_id, quest_id, creation_date) 
+                    VALUES ('$comment', NULL, '$quest_id', CURRENT_TIMESTAMP)";
+    if (mysqli_query($conn, $insert_query)) {
+        echo "Comment added successfully!";
+        // Redirect to the same page to prevent form resubmission
+        header("Location: {$_SERVER['REQUEST_URI']}");
+        exit();
+    } else {
+        echo "Error: " . $insert_query . "<br>" . mysqli_error($conn);
+    }
+
+    // Close database connection
+    mysqli_close($conn);
+}
 ?>
 
 <!DOCTYPE html>
@@ -160,5 +196,38 @@ mysqli_close($conn);
             </script>
         </div>
     </div>
+    <?php
+    // Fetch comments for the current quest if ID is set
+    if (isset($_GET['ID'])) {
+        include '../includes/dbcon.php';
+
+        if (!$conn) {
+            die("Connection failed: " . mysqli_connect_error());
+        }
+
+        $quest_id = mysqli_real_escape_string($conn, $_GET['ID']);
+        $comments_query = "SELECT * FROM comment WHERE quest_id='$quest_id' ORDER BY creation_date DESC";
+        $comments_result = mysqli_query($conn, $comments_query);
+
+        if (mysqli_num_rows($comments_result) > 0) {
+            // Display comments
+            while ($comment = mysqli_fetch_assoc($comments_result)) {
+                echo "<p>Comment: " . $comment['comment'] . "</p>";
+                echo "<p>Posted on: " . $comment['creation_date'] . "</p>";
+            }
+        } else {
+            echo "No comments found.";
+        }
+
+        // Close database connection
+        mysqli_close($conn);
+    }
+    ?>
+
+    <form action="../room/quest_info.php?ID=<?php echo $quest_id; ?>" method="post">
+        <input type="hidden" name="quest_id" value="<?php echo $quest_id; ?>">
+        <textarea name="comment" placeholder="Enter your comment"></textarea>
+        <button type="submit">Submit</button>
+    </form>
 </body>
 </html>
