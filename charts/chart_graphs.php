@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -24,6 +22,7 @@ include '../charts/popday_chart.php';
 <?php
 include '../charts/popularity_chart.php';
 ?>
+
 
 </body>
 </html>

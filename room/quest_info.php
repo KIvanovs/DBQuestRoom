@@ -1,78 +1,65 @@
 <?php
 include '../includes/dbcon.php';
 
-    $name = "";
-    $category = "";
-    $address = "";
-    $peopleAmount = "";
-    $ageLimit = "";
-    $description = "";
-    $photoPath = "";
+$name = "";
+$category = "";
+$address = "";
+$peopleAmount = "";
+$ageLimit = "";
+$description = "";
+$photoPath = "";
 
-    // Function to escape user input
 function escape_input($input) {
     global $conn;
     return mysqli_real_escape_string($conn, $input);
 }
 
 if (!$conn) {
-	die("Connection failed: " . mysqli_connect_error());
+    die("Connection failed: " . mysqli_connect_error());
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['ID'])) {
     $quest_id = mysqli_real_escape_string($conn, $_GET['ID']);
-
-		// Select quest from the database
-		
-        $query = "SELECT q.ID, q.name, q.peopleAmount, q.description, q.photoPath,
-                  a.buildingAdress, 
-                  qc.ageLimit, qc.categoryName
-              FROM quests q
-              LEFT JOIN adress a ON q.adress_id = a.ID
-              LEFT JOIN questcategory qc ON q.questCategory_id = qc.ID  WHERE q.ID='$quest_id'";
-		$result = mysqli_query($conn, $query);
-
-		if (mysqli_num_rows($result) > 0) {
-			$row = mysqli_fetch_assoc($result);
-			$name = $row['name'];
-			$category = $row['categoryName'];
-			$address = $row['buildingAdress'];
-			$peopleAmount = $row['peopleAmount'];
-			$ageLimit = $row['ageLimit'];
-			$description = $row['description'];
-			$photoPath = $row['photoPath'];
-		} else {
-			die("Quest not found!");
-		}
+    $query = "SELECT q.ID, q.name, q.peopleAmount, q.description, q.photoPath,
+              a.buildingAdress, 
+              qc.ageLimit, qc.categoryName
+          FROM quests q
+          LEFT JOIN adress a ON q.adress_id = a.ID
+          LEFT JOIN questcategory qc ON q.questCategory_id = qc.ID  WHERE q.ID='$quest_id'";
+    $result = mysqli_query($conn, $query);
+    if (mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+        $name = $row['name'];
+        $category = $row['categoryName'];
+        $address = $row['buildingAdress'];
+        $peopleAmount = $row['peopleAmount'];
+        $ageLimit = $row['ageLimit'];
+        $description = $row['description'];
+        $photoPath = $row['photoPath'];
+    } else {
+        die("Quest not found!");
+    }
 }
 
-// Close database connection
 mysqli_close($conn);
 
-// Handle comment submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
-    include '../includes/dbcon.php'; // Reconnect to the database
-
+    include '../includes/dbcon.php';
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
     }
-
     $comment = mysqli_real_escape_string($conn, $_POST['comment']);
     $quest_id = mysqli_real_escape_string($conn, $_POST['quest_id']);
-
-    // Insert comment into the database
-    $insert_query = "INSERT INTO comment (comment, user_id, quest_id, creation_date) 
-                    VALUES ('$comment', NULL, '$quest_id', CURRENT_TIMESTAMP)";
+    $reply_to = isset($_POST['reply_to']) ? mysqli_real_escape_string($conn, $_POST['reply_to']) : null;
+    $insert_query = "INSERT INTO comment (comment, user_id, quest_id, reply_to, creation_date) 
+                    VALUES ('$comment', NULL, '$quest_id', '$reply_to', CURRENT_TIMESTAMP)";
     if (mysqli_query($conn, $insert_query)) {
         echo "Comment added successfully!";
-        // Redirect to the same page to prevent form resubmission
         header("Location: {$_SERVER['REQUEST_URI']}");
         exit();
     } else {
         echo "Error: " . $insert_query . "<br>" . mysqli_error($conn);
     }
-
-    // Close database connection
     mysqli_close($conn);
 }
 ?>
@@ -84,17 +71,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         .selected {
-            background-color: yellow; /* Цвет выделенной кнопки */
+            background-color: yellow;
         }
         .selected-button {
-            background-color: green; /* Цвет выбранной кнопки */
+            background-color: green;
+        }
+        .reply-popup {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 15px;
+            z-index: 1;
         }
     </style>
 </head>
 <body>
     <div class="card">
         <div class="card-image">
-        <img src="<?php echo $photoPath; ?>" alt="photo of <?php echo $name; ?>" style="max-width: 200px; max-height: 200px;">
+            <img src="<?php echo $photoPath; ?>" alt="photo of <?php echo $name; ?>" style="max-width: 200px; max-height: 200px;">
         </div>
         <div class="card-content">
             <h2><?php echo $name; ?></h2>
@@ -115,19 +110,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                 <label>Time:</label><br>
                 <?php
                     include '../includes/dbcon.php';
-
-                    // Проверяем соединение
                     if (!$conn) {
                         die("Connection failed: " . mysqli_connect_error());
                     }
-
-                    // Выполняем запрос к базе данных для получения данных о времени и цене
                     $query = "SELECT timePeriod, cost FROM prices";
                     $result = mysqli_query($conn, $query);
-
-                    // Обрабатываем результаты запроса
                     if (mysqli_num_rows($result) > 0) {
-                        // Выводим кнопки на основе данных из таблицы prices
                         while ($row = mysqli_fetch_assoc($result)) {
                             $time = $row['timePeriod'];
                             $cost = $row['cost'];
@@ -136,8 +124,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                     } else {
                         echo "No results";
                     }
-
-                    // Закрываем соединение с базой данных
                     mysqli_close($conn);
                 ?>
                 <br><br>
@@ -155,79 +141,84 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                     </div>
                 </div>
             </form>
-
-            <script>
-                function selectTime(time, cost, button) {
-                    // Установка выбранного времени и цены в блоке оплаты
-                    document.getElementById("timePeriod").textContent = time;
-                    document.getElementById("cost").textContent = cost + " EUR";
-
-                    // Установка выбранной кнопке класса для изменения стиля
-                    var buttons = document.querySelectorAll('button[name="time"]');
-                    buttons.forEach(function(btn) {
-                        btn.classList.remove('selected-button'); // Удаление класса у всех кнопок
-                    });
-                    button.classList.add('selected-button'); // Добавление класса выбранной кнопке
-
-
-                    // Set the selected time and cost in the hidden input fields
-                    document.getElementById("selected-time").value = time;
-                    document.getElementById("cost-input").value = cost;
-
-                    // Send the cost and selected time to a PHP
-                    $.ajax({
-                        type: "POST",
-                        url: "reserve.php",
-                        data: {
-                            cost: cost,
-                            time: time 
-                        },
-                        success: function (response) {
-                            console.log("Cost and time sent to PHP: " + cost + " " + time);
-                        },
-                        error: function () {
-                            console.error("AJAX request failed");
-                        }
-                    });
-
-                    // Показ блока оплаты
-                    document.getElementById("payment-modal").style.display = "block";
-                }
-            </script>
         </div>
     </div>
+
     <?php
-    // Fetch comments for the current quest if ID is set
-    if (isset($_GET['ID'])) {
-        include '../includes/dbcon.php';
-
-        if (!$conn) {
-            die("Connection failed: " . mysqli_connect_error());
-        }
-
-        $quest_id = mysqli_real_escape_string($conn, $_GET['ID']);
-        $comments_query = "SELECT * FROM comment WHERE quest_id='$quest_id' ORDER BY creation_date DESC";
-        $comments_result = mysqli_query($conn, $comments_query);
-
-        if (mysqli_num_rows($comments_result) > 0) {
-            // Display comments
-            while ($comment = mysqli_fetch_assoc($comments_result)) {
-                echo "<p>Comment: " . $comment['comment'] . "</p>";
-                echo "<p>Posted on: " . $comment['creation_date'] . "</p>";
-            }
-        } else {
-            echo "No comments found.";
-        }
-
-        // Close database connection
-        mysqli_close($conn);
+    include '../includes/dbcon.php';
+    if (!$conn) {
+        die("Connection failed: " . mysqli_connect_error());
     }
+    $comments_query = "SELECT c.*, u.nickname 
+                    FROM comment c 
+                    LEFT JOIN users u ON c.user_id = u.ID
+                    WHERE c.quest_id='$quest_id' 
+                    ORDER BY c.creation_date DESC";
+    $comments_result = mysqli_query($conn, $comments_query);
+    if (mysqli_num_rows($comments_result) > 0) {
+        while ($comment = mysqli_fetch_assoc($comments_result)) {
+            echo "<p><strong>Comment by: " . $comment['nickname'] . "</strong></p>";
+            echo "<p>Comment: " . $comment['comment'] . "</p>";
+            echo "<p>Posted on: " . $comment['creation_date'] . "</p>";
+            echo "<button type='button' onclick='replyToComment(\"{$comment['ID']}\")'>Reply</button>";
+        }
+    } else {
+        echo "No comments found.";
+    }
+    mysqli_close($conn);
     ?>
 
-    <form action="../room/quest_info.php?ID=<?php echo $quest_id; ?>" method="post">
+    <form action="../comment/quest_comment.php" method="post">
         <input type="hidden" name="quest_id" value="<?php echo $quest_id; ?>">
+        <input type="hidden" name="reply_to" id="replyTo" value="">
         <textarea name="comment" placeholder="Enter your comment"></textarea>
         <button type="submit">Submit</button>
     </form>
+
+    <!-- Popup for replying to comments -->
+    <div class="reply-popup" id="replyPopup">
+        <form action="../comment/quest_comment.php" method="post">
+            <input type="hidden" name="quest_id" value="<?php echo $quest_id; ?>">
+            <input type="hidden" name="reply_to" id="replyTo" value="">
+            <textarea name="comment" placeholder="Enter your reply"></textarea>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        function selectTime(time, cost, button) {
+            document.getElementById("timePeriod").textContent = time;
+            document.getElementById("cost").textContent = cost + " EUR";
+            var buttons = document.querySelectorAll('button[name="time"]');
+            buttons.forEach(function(btn) {
+                btn.classList.remove('selected-button');
+            });
+            button.classList.add('selected-button');
+            document.getElementById("selected-time").value = time;
+            document.getElementById("cost-input").value = cost;
+            $.ajax({
+                type: "POST",
+                url: "reserve.php",
+                data: {
+                    cost: cost,
+                    time: time 
+                },
+                success: function (response) {
+                    console.log("Cost and time sent to PHP: " + cost + " " + time);
+                },
+                error: function () {
+                    console.error("AJAX request failed");
+                }
+            });
+            document.getElementById("payment-modal").style.display = "block";
+        }
+
+        function replyToComment(commentId) {
+            document.getElementById('replyTo').value = commentId;
+            document.getElementById('replyPopup').style.display = 'block';
+            document.getElementById('replyPopup').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
 </body>
 </html>
+<!-- если нажать reply и потом писать ответ там где комент , все гуд , а если писать через попап то нихрена -->
