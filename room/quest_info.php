@@ -84,6 +84,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             padding: 15px;
             z-index: 1;
         }
+        .comment {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+        }
+
+        .reply {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            margin-left: 50px; /* Для размещения ответа правее комментария */
+        }
     </style>
 </head>
 <body>
@@ -157,10 +169,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
     $comments_result = mysqli_query($conn, $comments_query);
     if (mysqli_num_rows($comments_result) > 0) {
         while ($comment = mysqli_fetch_assoc($comments_result)) {
+            echo "<div class='" . ($comment['reply_to'] > 0 ? 'reply' : 'comment') . "'>";
             echo "<p><strong>Comment by: " . $comment['nickname'] . "</strong></p>";
             echo "<p>Comment: " . $comment['comment'] . "</p>";
             echo "<p>Posted on: " . $comment['creation_date'] . "</p>";
+            if ($comment['reply_to'] > 0) {
+                // Выводим информацию о том, на какой комментарий был дан ответ
+                $reply_to_query = "SELECT nickname FROM users WHERE ID=" . $comment['reply_to'];
+                $reply_to_result = mysqli_query($conn, $reply_to_query);
+                if (mysqli_num_rows($reply_to_result) > 0) {
+                    $reply_to_user = mysqli_fetch_assoc($reply_to_result);
+                    echo "<p>Reply to: " . $reply_to_user['nickname'] . "</p>";
+                }
+            }
             echo "<button type='button' onclick='replyToComment(\"{$comment['ID']}\")'>Reply</button>";
+            echo "</div>";
+            
+            // Вставляем форму для ответа прямо под комментарием
+            echo "<div class='reply-popup' id='replyPopup{$comment['ID']}' style='display: none;'>
+                    <form action='../comment/quest_comment.php' method='post'>
+                        <input type='hidden' name='quest_id' value='$quest_id'>
+                        <input type='hidden' name='reply_to' value='{$comment['ID']}'>
+                        <textarea name='comment' placeholder='Enter your reply'></textarea>
+                        <button type='submit'>Submit</button>
+                    </form>
+                </div>";
         }
     } else {
         echo "No comments found.";
@@ -187,6 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
 
     <script>
         function selectTime(time, cost, button) {
+            
             document.getElementById("timePeriod").textContent = time;
             document.getElementById("cost").textContent = cost + " EUR";
             var buttons = document.querySelectorAll('button[name="time"]');
