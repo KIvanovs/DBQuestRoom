@@ -149,6 +149,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                             <option value="cash">Cash</option>
                             <option value="card">Card</option>
                         </select>
+                        <br><br>
+                        <div id="card_details" style="display: none;">
+                            <label for="cardDate">Card Expiry Date:</label>
+                            <input type="text" id="cardDate" name="cardDate">
+                            <br><br>
+                            <label for="cardNumber">Card Number:</label>
+                            <input type="text" id="cardNumber" name="cardNumber">
+                            <br><br>
+                            <label for="cardName">Cardholder Name:</label>
+                            <input type="text" id="cardName" name="cardName">
+                            <br><br>
+                            <label for="cardFilial">Card Filial:</label>
+                            <input type="text" id="cardFilial" name="cardFilial">
+                            <br><br>
+                            <label for="cardCode">Card Security Code:</label>
+                            <input type="text" id="cardCode" name="cardCode">
+                            <br><br>
+                            <input type="checkbox" id="save_card_info" name="save_card_info">
+                            <label for="save_card_info">Save card information for future use</label>
+                        </div>
                         <button type="submit" name="submit">Reserve</button>
                     </div>
                 </div>
@@ -252,7 +272,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             document.getElementById('replyPopup').style.display = 'block';
             document.getElementById('replyPopup').scrollIntoView({ behavior: 'smooth' });
         }
+
+         // Показать/скрыть поля данных карты в зависимости от выбора метода оплаты
+         document.getElementById("payment-method").addEventListener("change", function() {
+            var cardDetails = document.getElementById("card_details");
+            if (this.value === "card") {
+                cardDetails.style.display = "block";
+            } else {
+                var saveCardInfo = document.getElementById("save_card_info");
+                if (!saveCardInfo.checked) {
+                    cardDetails.style.display = "none";
+                }
+            }
+        });
+
+        // Показать/скрыть поля данных карты в зависимости от выбора метода оплаты при загрузке страницы
+        window.addEventListener("load", function() {
+            var cardDetails = document.getElementById("card_details");
+            var paymentMethod = document.getElementById("payment-method");
+            if (paymentMethod.value === "card") {
+                cardDetails.style.display = "block";
+            } else {
+                var saveCardInfo = document.getElementById("save_card_info");
+                if (!saveCardInfo.checked) {
+                    cardDetails.style.display = "none";
+                }
+            }
+        });
+
+        // Сохранить данные карты только если выбрана опция сохранения карты
+        document.getElementById("save_card_info").addEventListener("change", function() {
+            var cardDetails = document.getElementById("card_details");
+            if (this.checked) {
+                cardDetails.style.display = "block";
+            } else {
+                var paymentMethod = document.getElementById("payment-method");
+                if (paymentMethod.value !== "card") {
+                    cardDetails.style.display = "none";
+                }
+            }
+        });
     </script>
 </body>
 </html>
-<!-- если нажать reply и потом писать ответ там где комент , все гуд , а если писать через попап то нихрена -->
