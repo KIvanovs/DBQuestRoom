@@ -215,6 +215,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                         <button type='submit'>Submit</button>
                     </form>
                 </div>";
+
+                //КОМЕНТАРИИ НЕЛЬЗЯ УДАЛЯТЬ МЕНЯТЬ , НАДО ФИКСИТЬ!!!!!э
+                //КОМЕНТАРИИ НЕЛЬЗЯ УДАЛЯТЬ МЕНЯТЬ , НАДО ФИКСИТЬ!!!!!
+                //КОМЕНТАРИИ НЕЛЬЗЯ УДАЛЯТЬ МЕНЯТЬ , НАДО ФИКСИТЬ!!!!!
+                //КОМЕНТАРИИ НЕЛЬЗЯ УДАЛЯТЬ МЕНЯТЬ , НАДО ФИКСИТЬ!!!!!
         }
     } else {
         echo "No comments found.";
@@ -269,10 +274,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
         }
 
         function replyToComment(commentId) {
-            document.getElementById('replyTo').value = commentId;
-            document.getElementById('replyPopup').style.display = 'block';
-            document.getElementById('replyPopup').scrollIntoView({ behavior: 'smooth' });
+        var replyPopup = document.getElementById('replyPopup' + commentId);
+        if (replyPopup.style.display === 'none') {
+            replyPopup.style.display = 'block';
+        } else {
+            replyPopup.style.display = 'none';
         }
+        replyPopup.scrollIntoView({ behavior: 'smooth' });
+    }
 
          // Показать/скрыть поля данных карты в зависимости от выбора метода оплаты
          document.getElementById("payment-method").addEventListener("change", function() {

@@ -26,3 +26,5 @@ include '../charts/popularity_chart.php';
 
 </body>
 </html>
+
+<!-- попробовать использовать mpdf скачивать библу надо тут в терминале а не cmd -->

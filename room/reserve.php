@@ -42,18 +42,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $cardFilial = $_POST['cardFilial'];
         $cardCode = $_POST['cardCode'];
 
-        $card_query = "INSERT INTO card (cardDate, cardNumber, cardName, cardFilial, cardCode) VALUES
-                       ('$cardDate', '$cardNumber', '$cardName', '$cardFilial', '$cardCode')";
+        // Insert card information with user_id into the card table
+        $card_query = "INSERT INTO card (cardDate, cardNumber, cardName, cardFilial, cardCode, user_id) VALUES
+                       ('$cardDate', '$cardNumber', '$cardName', '$cardFilial', '$cardCode', '$user_id')";
         mysqli_query($conn, $card_query);
-        $card_id = mysqli_insert_id($conn);
-
-        // Update the user's card_id in the users table
-        $update_user_query = "UPDATE users SET card_id = '$card_id' WHERE ID = '$user_id'";
-        mysqli_query($conn, $update_user_query);
     }
 
     echo "Reservation saved successfully!";
-    echo "<p><a href='../room/quest_list.php'>Back to home page</a> </p>";
+    echo "<p><a href='../room/quest_list.php'>Back to home page</a></p>";
 }
 
 mysqli_close($conn);
