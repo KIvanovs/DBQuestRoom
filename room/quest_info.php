@@ -191,9 +191,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
     if (mysqli_num_rows($comments_result) > 0) {
         while ($comment = mysqli_fetch_assoc($comments_result)) {
             echo "<div class='" . ($comment['reply_to'] > 0 ? 'reply' : 'comment') . "'>";
-            echo "<p><strong>Comment by: " . $comment['nickname'] . "</strong></p>";
-            echo "<p>Comment: " . $comment['comment'] . "</p>";
-            echo "<p>Posted on: " . $comment['creation_date'] . "</p>";
+            echo "<p><strong>@" . $comment['nickname'] . "</strong> <span style='font-size: 0.8em; color: gray;'>posted on " . $comment['creation_date'] . "</span></p>";
+            echo "<p>" . $comment['comment'] . "</p>";
             if ($comment['reply_to'] > 0) {
                 // Выводим информацию о том, на какой комментарий был дан ответ
                 $reply_to_query = "SELECT nickname FROM users WHERE ID=" . $comment['reply_to'];
@@ -208,13 +207,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             
             // Вставляем форму для ответа прямо под комментарием
             echo "<div class='reply-popup' id='replyPopup{$comment['ID']}' style='display: none;'>
-                    <form action='../comment/quest_comment.php' method='post'>
-                        <input type='hidden' name='quest_id' value='$quest_id'>
-                        <input type='hidden' name='reply_to' value='{$comment['ID']}'>
-                        <textarea name='comment' placeholder='Enter your reply'></textarea>
-                        <button type='submit'>Submit</button>
-                    </form>
-                </div>";
+            <form action='../comment/quest_comment.php' method='post'>
+                <input type='hidden' name='quest_id' value='$quest_id'>
+                <input type='hidden' name='reply_to' id='replyTo{$comment['ID']}' value='{$comment['ID']}'>
+                <textarea name='comment' placeholder='Enter your reply'></textarea>
+                <button type='submit'>Submit</button>
+            </form>
+            </div>";
 
                 //КОМЕНТАРИИ НЕЛЬЗЯ УДАЛЯТЬ МЕНЯТЬ , НАДО ФИКСИТЬ!!!!!э
                 //КОМЕНТАРИИ НЕЛЬЗЯ УДАЛЯТЬ МЕНЯТЬ , НАДО ФИКСИТЬ!!!!!
@@ -275,11 +274,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
 
         function replyToComment(commentId) {
         var replyPopup = document.getElementById('replyPopup' + commentId);
-        if (replyPopup.style.display === 'none') {
-            replyPopup.style.display = 'block';
-        } else {
-            replyPopup.style.display = 'none';
-        }
+        document.getElementById('replyTo' + commentId).value = commentId;  // Обновляем правильный элемент
+        replyPopup.style.display = 'block';
         replyPopup.scrollIntoView({ behavior: 'smooth' });
     }
 
