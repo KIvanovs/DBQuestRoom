@@ -1,6 +1,9 @@
+
 <?php
-    include '../includes/dbcon.php';
-	
+include '../includes/dbcon.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 	// Check connection
 	if ($conn->connect_error) {
 	  die("Connection failed: " . $conn->connect_error);
@@ -77,12 +80,41 @@
 	$sql = "INSERT INTO users (nickname,  password, email, name, surname, phoneNumber) VALUES ('$nickname', '$hashed_password', '$email' ,'$name','$surname','$phone')";
 	
 	if ($conn->query($sql) === TRUE) {
-	  echo "New record created successfully";
-	  echo "<p>Please <a href='../register_login/loginform.php'>log in</a> to start session.</p>";
-	} else {
-	  echo "Error: " . $sql . "<br>" . $conn->error;
-	}
+        echo "New record created successfully";
+        echo "<p>Please <a href='../register_login/loginform.php'>log in</a> to start session.</p>";
+
+        require '../vendor/autoload.php';
+
+
+		
+
+		$mail = new PHPMailer(true);
+		try {
+			$mail->isSMTP();
+			$mail->Host = 'smtp.gmail.com';
+			$mail->SMTPAuth = true;
+			$mail->Username = 'kirillquestroom@gmail.com'; // SMTP username
+			$mail->Password = 'tdiscwhdffittzmz';        // SMTP password
+			$mail->SMTPSecure = 'tls';
+			$mail->Port = 587;
+
+			$mail->setFrom('kirillquestroom@gmail.com', 'KirillQuestRoom');
+			$mail->addAddress($email, $name); // Add a recipient
+
+			$mail->isHTML(true); // Set email format to HTML
+			$mail->Subject = 'Registration Successful';
+			$mail->Body    = "Hello $name,<br><br>Thank you for registering on our site.<br><br>Best Regards,<br>The Team Kirill Quest Room";
+
+			$mail->send();
+			echo 'Message has been sent';
+		} catch (Exception $e) {
+			echo 'Message could not be sent. Mailer Error: ', $mail->ErrorInfo;
+		}
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+    }
 	
 	// Close database connection
 	$conn->close();
 ?>
+
