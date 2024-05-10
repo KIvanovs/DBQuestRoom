@@ -23,6 +23,7 @@ include '../charts/popday_chart.php';
 include '../charts/popularity_chart.php';
 ?>
 
+<button onclick="window.location.href='../charts/generate_pdf.php'">Скачать отчет в PDF</button>
 
 </body>
 </html>
