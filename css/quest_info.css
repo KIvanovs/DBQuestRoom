@@ -1,0 +1,26 @@
+.selected {
+    background-color: yellow;
+}
+.selected-button {
+    background-color: green;
+}
+.reply-popup {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 15px;
+    z-index: 1;
+}
+.comment {
+border: 1px solid #ccc;
+padding: 10px;
+margin-bottom: 10px;
+}
+
+.reply {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    margin-left: 50px; /* Для размещения ответа правее комментария */
+}

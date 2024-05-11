@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Login Form</title>
-	<link rel="stylesheet" type="text/css" href="../css/login.css">
-</head>
-<body>
-	<?php include '../includes/header.php'; 
+<?php
+  $pageTitle = 'Login form';
+  include_once '../includes/header.php';
 	?>
 	<form method="post" action="../register_login/login.php">
 		<h2>Login Form</h2>
@@ -17,8 +12,8 @@
 		
 		<input type="submit" name="login" value="Login">
 	</form>
-</body>
-</html>
-
+	<?php 
+include_once '../includes/footer.php';
+?>
 
 

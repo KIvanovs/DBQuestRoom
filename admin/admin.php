@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Comments</title>
-</head>
-<body>
 <?php
-	include '../includes/header.php';
+  $pageTitle = 'Admin info';
+  include_once '../includes/header.php';
+
 	?>
 	<h1>Admin info</h1>
 	<?php
@@ -66,5 +62,6 @@
 
 		
 	?>
-</body>
-</html>
+<?php 
+include_once '../includes/footer.php';
+?>

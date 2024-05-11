@@ -1,33 +1,31 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Card Example</title>
-  
-  <link rel="stylesheet" type="text/css" href="../css/home_page.css">
-  <script src="../js/filter.js"></script>
-</head>
-<body>
-  <?php
-  include '../includes/header.php';
+<?php
+  $pageTitle = 'Quest list';
+  include_once '../includes/header.php';
 
-  if(isset($_SESSION['user_id']) && isset($_SESSION['nickname'])) {
-     // The user is currently logged in as a user
-     echo "You are logged in as a user!";
-     echo "Welcome " . $_SESSION['nickname'];
-  } else if(isset($_SESSION['admin_id']) && isset($_SESSION['admin_name'])) {
-     // The user is currently logged in as an admin
-     echo "You are logged in as an admin!";
-     echo "Welcome " . $_SESSION['admin_name'];
-  } else {
-     // The user is not currently logged in
-     echo "You are not logged in!";
-  }
+  // if(isset($_SESSION['user_id']) && isset($_SESSION['nickname'])) {
+  //    // The user is currently logged in as a user
+  //    echo "You are logged in as a user!";
+  //    echo "Welcome " . $_SESSION['nickname'];
+  // } else if(isset($_SESSION['admin_id']) && isset($_SESSION['admin_name'])) {
+  //    // The user is currently logged in as an admin
+  //    echo "You are logged in as an admin!";
+  //    echo "Welcome " . $_SESSION['admin_name'];
+  // } else {
+  //    // The user is not currently logged in
+  //    echo "You are not logged in!";
+  // }
   
-  echo "<form method='GET'>
-  <label for='search'>Search:</label>
-  <input type='text' name='search' id='search'>
-  <button type='submit'>Go</button>
-	</form>";
+  echo "
+  <div class='d-flex container py-3  '>
+    <form method='GET' class='row g-3'>
+      <div class='col-12 d-flex'>
+        <input type='text' class='form-control me-3' name='search' id='search' placeholder='Enter search term'>
+        <button type='submit' class='btn btn-primary'>Go</button>
+      </div>
+    </form>
+  </div>";
+  
+
 
 	include '../includes/dbcon.php';
 
@@ -54,32 +52,43 @@
 	// Don't close database connection and save data in result
 	mysqli_free_result($result);
 	?>
+<?php
+echo "
+<div class='container my-4'>
+  <div class='row'>
+    <div class='col-md-3 mb-3 d-flex flex-column'> <!-- Added d-flex and flex-column -->
+      <label for='category' class='form-label'>Category:</label>
+      <select id='category' class='form-select' onchange='filterCards()'>
+        <option value=''>All</option>";
+        foreach ($categories as $category) {
+            echo "<option value='" . htmlspecialchars($category['categoryName']) . "'>" . htmlspecialchars($category['categoryName']) . "</option>";
+        }
+      echo "</select>
+    </div>
+    
+    <div class='col-md-4 mb-3 d-flex flex-column'> <!-- Added d-flex and flex-column -->
+      <label for='ageLimit' class='form-label'>Age Limit:</label>
+      <select id='ageLimit' class='form-select' onchange='filterCards()'>
+        <option value=''>All</option>";
+        foreach ($ageLimits as $ageLimit) {
+            echo "<option value='" . htmlspecialchars($ageLimit['ageLimit']) . "'>" . htmlspecialchars($ageLimit['ageLimit']) . "+</option>";
+        }
+      echo "</select>
+    </div>
+    
+    <div class='col-md-5 mb-3 d-flex flex-column'> <!-- Added d-flex and flex-column -->
+      <label for='peopleAmount' class='form-label'>People Amount:</label>
+      <select id='peopleAmount' class='form-select' onchange='filterCards()'>
+        <option value=''>All</option>";
+        foreach ($peopleAmounts as $peopleAmount) {
+            echo "<option value='" . htmlspecialchars($peopleAmount['peopleAmount']) . "'>" . htmlspecialchars($peopleAmount['peopleAmount']) . "</option>";
+        }
+      echo "</select>
+    </div>
+  </div>
+</div>";
+?>
 
-  <div class="filter-bar">
-  <label for="category">Category:</label>
-    <select id="category" onchange="filterCards()">
-    <option value="">All</option>
-    <?php foreach($categories as $category): ?>
-        <option value="<?php echo $category['categoryName']; ?>"><?php echo $category['categoryName']; ?></option>
-    <?php endforeach; ?>
-    </select>
-
-    <label for="ageLimit">Age Limit:</label>
-    <select id="ageLimit" onchange="filterCards()">
-    <option value="">All</option>
-    <?php foreach($ageLimits as $ageLimit): ?>
-        <option value="<?php echo $ageLimit['ageLimit']; ?>"><?php echo $ageLimit['ageLimit']; ?>+</option>
-    <?php endforeach; ?>
-    </select>
-
-    <label for="peopleAmount">People Amount:</label>
-    <select id="peopleAmount" onchange="filterCards()">
-    <option value="">All</option>
-    <?php foreach($peopleAmounts as $peopleAmount): ?>
-        <option value="<?php echo $peopleAmount['peopleAmount']; ?>"><?php echo $peopleAmount['peopleAmount']; ?></option>
-    <?php endforeach; ?>
-    </select>
-	</div>
 
 
 
@@ -116,7 +125,7 @@
 
   <div class="cards-wrapper">
   <?php
-  echo $query;
+  
     // Display each quest as a card
     while ($row = mysqli_fetch_assoc($result)) {
       $id = $row['ID'];
@@ -144,5 +153,6 @@
     ?>
 	</div>
 	
-	</body>
-	</html> 
+<?php 
+include_once '../includes/footer.php';
+?>

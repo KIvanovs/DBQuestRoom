@@ -1,5 +1,5 @@
 <?php
-
+$pageTitle = "User's profile";
 include '../includes/header.php';
 
 // Check if the user is not an admin

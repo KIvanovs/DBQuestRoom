@@ -1,12 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Registration Form</title>
-	<link rel="stylesheet" type="text/css" href="../css/register.css">
-</head>
-<body>
 <?php
-	include '../includes/header.php';
+  $pageTitle = 'Registration form';
+  include_once '../includes/header.php';
 	?>
 	<div class="container">
 		<h1>Registration Form</h1>
@@ -35,5 +29,6 @@
 			<input type="submit" value="Submit">
 		</form>
 	</div>
-</body>
-</html>
+	<?php 
+include_once '../includes/footer.php';
+?>

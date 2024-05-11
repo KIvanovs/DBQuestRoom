@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Add Quest</title>
-</head>
-<body>
-	<?php
-	include '../includes/header.php';
+<?php
+  $pageTitle = 'Quest Room ';
+  include_once '../includes/header.php';
 	?>
 	<h2>Add Quest</h2>
 	<form method="post" action="../room/add_quest.php" enctype="multipart/form-data">
@@ -114,5 +109,6 @@
 </table>
 
 
-</body>
-</html>
+<?php 
+include_once '../includes/footer.php';
+?>

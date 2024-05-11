@@ -65,41 +65,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
 }
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title><?php echo $name; ?></title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        .selected {
-            background-color: yellow;
-        }
-        .selected-button {
-            background-color: green;
-        }
-        .reply-popup {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            border: 1px solid #ccc;
-            padding: 15px;
-            z-index: 1;
-        }
-        .comment {
-        border: 1px solid #ccc;
-        padding: 10px;
-        margin-bottom: 10px;
-        }
+    <?php
+    $pageTitle = 'Quest list';
+    include_once '../includes/header.php';
+    ?>
 
-        .reply {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-            margin-left: 50px; /* Для размещения ответа правее комментария */
-        }
-    </style>
-</head>
-<body>
     <div class="card">
         <div class="card-image">
             <img src="<?php echo $photoPath; ?>" alt="photo of <?php echo $name; ?>" style="max-width: 200px; max-height: 200px;">
@@ -319,5 +289,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             }
         });
     </script>
-</body>
-</html>
+<?php 
+include_once '../includes/footer.php';
+?>

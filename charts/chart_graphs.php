@@ -1,12 +1,8 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-    <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
-</head>
-<body>
+
 
 <?php
-include '../includes/header.php';
+$pageTitle = 'Quest Room chart info';
+include_once '../includes/header.php';
 include '../charts/income_chart.php';
 
 ?>
@@ -25,7 +21,8 @@ include '../charts/popularity_chart.php';
 
 <button onclick="window.location.href='../charts/generate_pdf.php'">Скачать отчет в PDF</button>
 
-</body>
-</html>
+<?php 
+include_once '../includes/footer.php';
+?>
 
 <!-- попробовать использовать mpdf скачивать библу надо тут в терминале а не cmd -->
