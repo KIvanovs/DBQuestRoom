@@ -1,6 +1,7 @@
 <?php
   $pageTitle = 'Quest list';
   include_once '../includes/header.php';
+  
 
   // if(isset($_SESSION['user_id']) && isset($_SESSION['nickname'])) {
   //    // The user is currently logged in as a user
@@ -123,35 +124,37 @@ echo "
   }
  ?>
 
-  <div class="cards-wrapper">
   <?php
-  
-    // Display each quest as a card
-    while ($row = mysqli_fetch_assoc($result)) {
-      $id = $row['ID'];
-      $name = $row['name'];
-      $category = $row['categoryName'];
-      $address = $row['buildingAdress'];
-      $peopleAmount = $row['peopleAmount'];
-      $ageLimit = $row['ageLimit'];
-      $description = $row['description'];
-      $photoPath = $row['photoPath'];
+    echo "<div class='container my-4'>
+      <div class='row'>";
 
-      // Wrap the entire card content in an anchor tag
-      echo '<a href="../room/quest_info.php?ID=' . $id . '" class="card" data-category="' . $category . '" data-age-limit="' . $ageLimit . '" data-people-amount="' . $peopleAmount . '">';
-      echo '<div class="card-image">';
-      echo '<img src="' . $photoPath . '" alt="photo of ' . $name . '">';
-      echo '</div>';
-      echo '<div class="card-content">';
-      echo '<h2>' . $name . '</h2>';
-      echo '<h3>' . $ageLimit . ' +</h3>';
-      echo '<h4>' . $peopleAmount . ' </h4>';
-      echo '<h5>' . $category . ' </h5>';
-      echo '</div>';
-      echo '</a>';
+      while ($row = mysqli_fetch_assoc($result)) {
+        $id = $row['ID'];
+        $name = $row['name'];
+        $category = $row['categoryName'];
+        $peopleAmount = $row['peopleAmount'];
+        $ageLimit = $row['ageLimit'];
+        $photoPath = $row['photoPath'];
+ 
+
+      echo "<div class='col-md-4 mb-4'>";
+      echo "<div class='card shadow' style='overflow: hidden; transition: filter 0.5s ease; filter: brightness(95%);' onmouseover='this.style.filter=\"brightness(100%)\"' onmouseout='this.style.filter=\"brightness(95%)\"'>"; //
+      echo "<img src='$photoPath' class='card-img-top' style='height: 250px; object-fit: cover;' alt='photo of $name'>";
+      echo "<div class='card-body'>";
+      echo "<div class='mb-2'>";
+      echo "<span class='badge bg-secondary'>$ageLimit+</span>";
+      echo "</div>";
+      echo "<h5 class='card-title'>$name</h5>";
+      echo "<p class='card-text'><small>$peopleAmount </small></p>";
+      echo "</div>"; // Close card-body
+      echo "<a href='../room/quest_info.php?ID=$id' class='stretched-link'></a>"; // Make the whole card clickable
+      echo "</div>"; // Close card
+      echo "</div>"; // Close column
     }
-    ?>
-	</div>
+
+    echo "</div>"; // Close row
+    echo "</div>"; // Close container
+  ?>
 	
 <?php 
 include_once '../includes/footer.php';

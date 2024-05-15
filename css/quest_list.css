@@ -1,0 +1,28 @@
+.card-img-overlay {
+    background: rgba(0, 0, 0, 0.3); /* Dark overlay for better text visibility */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .card-title {
+    margin-bottom: 0.75rem;
+  }
+  
+  .badge {
+    margin-right: 0.5rem;
+  }
+  
+  .card {
+    transition: transform 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: scale(1.05); /* Slight zoom on hover */
+  }
+  
+  .card-img {
+    object-fit: cover; /* Ensure images cover the card area */
+    height: 250px; /* Fixed height for uniformity */
+  }
+  
