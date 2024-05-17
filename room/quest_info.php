@@ -1,3 +1,5 @@
+
+
 <?php
 include '../includes/dbcon.php';
 
@@ -70,25 +72,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
     include_once '../includes/header.php';
     ?>
 
-    <div class="card">
-        <div class="card-image">
-            <img src="<?php echo $photoPath; ?>" alt="photo of <?php echo $name; ?>" style="max-width: 200px; max-height: 200px;">
-        </div>
-        <div class="card-content">
-            <h2><?php echo $name; ?></h2>
-            <p>Category: <?php echo $category; ?></p>
-            <p>Address: <?php echo $address; ?></p>
-            <p>Number of people: <?php echo $peopleAmount; ?></p>
-            <p>Age limit: <?php echo $ageLimit; ?></p>
-            <p>Description: <?php echo $description; ?></p>
+<div class="card" style="width: 18rem;">  <!-- Card with fixed width -->
+    <img src="<?php echo $photoPath; ?>" class="card-img-top" alt="photo of <?php echo $name; ?>" style="max-width: 200px; max-height: 200px;">
+    <div class="card-body">
+        <h5 class="card-title"><?php echo $name; ?></h5>
+        <p class="card-text">Category: <?php echo $category; ?></p>
+        <p class="card-text">Address: <?php echo $address; ?></p>
+        <p class="card-text">Number of people: <?php echo $peopleAmount; ?></p>
+        <p class="card-text">Age limit: <?php echo $ageLimit; ?></p>
+        <p class="card-text">Description: <?php echo $description; ?></p>
+
             <form action="../room/reserve.php" method="post">
                 <h1>Reservation</h1>
                 <input type="hidden" name="quest_id" value="<?php echo $quest_id; ?>">
                 <input type="hidden" name="discount" value="<?php echo $discount; ?>">
                 <input type="hidden" name="time" id="selected-time">
                 <input type="hidden" name="cost" id="cost-input">
+                <div id="calendar-container" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: auto; background-color: #f9f9f9;">
                 <label for="date">Date:</label>
-                <input type="date" name="date" id="date" min="<?php echo date('Y-m-d'); ?>" required>
+                <input type="text" id="date" name="date">
+                <script>
+                var picker = new Pikaday({
+                    container: document.getElementById('calendar-container'),
+                    field: document.getElementById('date'),
+                    bound: false,
+                    format: 'D.MM.YYYY',
+                    i18n: {
+                        previousMonth : 'Предыдущий месяц',
+                        nextMonth     : 'Следующий месяц',
+                        months        : ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+                        weekdays      : ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'],
+                        weekdaysShort : ['Вс','Пн','Вт','Ср','Чт','Пт','Сб']
+                    },
+                    firstDay: 1,
+                    onSelect: function(date) {
+                        document.getElementById('date').value = this.getMoment().format('D.MM.YYYY');
+                    },
+                    onDraw: function() {
+                        // Добавляем стили к заголовку после того, как календарь отрисован
+                        var title = document.querySelector('.pika-title');
+                        if (title) {
+                            title.style.backgroundColor = '#f2f2f2';
+                            title.style.padding = '10px';
+                            title.style.borderRadius = '5px';
+                            title.style.color = '#333';
+                            title.style.textAlign = 'center';
+                        }
+                    }
+                });
+                </script>
+                </div>
                 <br><br>
                 <label>Time:</label><br>
                 <?php
