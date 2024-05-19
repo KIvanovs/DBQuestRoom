@@ -91,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                 <div id="calendar-container" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: auto; background-color: #f9f9f9;">
                 <label for="date">Date:</label>
                 <input type="text" id="date" name="date">
+
                 <script>
                 var picker = new Pikaday({
                     container: document.getElementById('calendar-container'),
@@ -109,15 +110,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                         document.getElementById('date').value = this.getMoment().format('D.MM.YYYY');
                     },
                     onDraw: function() {
-                        // Добавляем стили к заголовку после того, как календарь отрисован
-                        var title = document.querySelector('.pika-title');
-                        if (title) {
-                            title.style.backgroundColor = '#f2f2f2';
-                            title.style.padding = '10px';
-                            title.style.borderRadius = '5px';
-                            title.style.color = '#333';
-                            title.style.textAlign = 'center';
+                        var prevButton = document.querySelector('.pika-prev');
+                        var nextButton = document.querySelector('.pika-next');
+                        if (prevButton && nextButton) {
+                            prevButton.style.backgroundColor = '#4CAF50';
+                            prevButton.style.color = 'white';
+                            prevButton.style.border = 'none';
+                            prevButton.style.borderRadius = '5px';
+                            nextButton.style.backgroundColor = '#4CAF50';
+                            nextButton.style.color = 'white';
+                            nextButton.style.border = 'none';
+                            nextButton.style.borderRadius = '5px';
                         }
+                        var days = document.querySelectorAll('.pika-button.pika-day');
+                        days.forEach(function(day) {
+                            day.style.backgroundColor = '#4CAF50'; // Зеленый фон
+                            day.style.color = 'white'; // Белый текст
+                            day.style.border = 'none';
+                            day.style.borderRadius = '5px';
+                            day.style.minWidth = '30px'; // Устанавливаем минимальную ширину для каждого дня
+                            day.style.height = '30px'; // Устанавливаем высоту для каждого дня
+                            day.style.lineHeight = '30px'; // Центрируем текст по высоте
+                        });
                     }
                 });
                 </script>
@@ -142,6 +156,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                     }
                     mysqli_close($conn);
                 ?>
+                <script>
+                document.getElementById('date').addEventListener('change', function() {
+                    var selectedDate = this.value;
+                    fetch('../room/reserve_check.php?date=' + selectedDate)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok ' + response.statusText);
+                            }
+                            return response.json();
+                        })
+                        .then(bookedTimes => {
+                            const timeButtons = document.querySelectorAll('button[name="time"]');
+                            timeButtons.forEach(button => {
+                                button.style.backgroundColor = bookedTimes.includes(button.value) ? 'red' : 'green';
+                            });
+                        })
+                        .catch(error => console.error('Error fetching data: ', error));
+                });
+                </script>
                 <br><br>
                 <div id="payment-modal" class="modal">
                     <div class="modal-content">
