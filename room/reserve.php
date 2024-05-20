@@ -39,12 +39,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $cardDate = $_POST['cardDate'];
         $cardNumber = $_POST['cardNumber'];
         $cardName = $_POST['cardName'];
-        $cardFilial = $_POST['cardFilial'];
-        $cardCode = $_POST['cardCode'];
 
         // Insert card information with user_id into the card table
-        $card_query = "INSERT INTO card (cardDate, cardNumber, cardName, cardFilial, cardCode, user_id) VALUES
-                       ('$cardDate', '$cardNumber', '$cardName', '$cardFilial', '$cardCode', '$user_id')";
+        $card_query = "INSERT INTO card (cardDate, cardNumber, cardName, user_id) VALUES
+                       ('$cardDate', '$cardNumber', '$cardName', '$user_id')";
         mysqli_query($conn, $card_query);
     }
 

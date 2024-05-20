@@ -88,53 +88,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                 <input type="hidden" name="discount" value="<?php echo $discount; ?>">
                 <input type="hidden" name="time" id="selected-time">
                 <input type="hidden" name="cost" id="cost-input">
-                <div id="calendar-container" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: auto; background-color: #f9f9f9;">
-                <label for="date">Date:</label>
-                <input type="text" id="date" name="date">
+                <div id="calendar-container" class="card" style="width: auto; background-color: #f9f9f9;">
+                    <label for="date" class="card-header">Date:</label>
+                    <input type="text" id="date" name="date" class="form-control">
+                
 
-                <script>
-                var picker = new Pikaday({
-                    container: document.getElementById('calendar-container'),
-                    field: document.getElementById('date'),
-                    bound: false,
-                    format: 'D.MM.YYYY',
-                    i18n: {
-                        previousMonth : 'Предыдущий месяц',
-                        nextMonth     : 'Следующий месяц',
-                        months        : ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
-                        weekdays      : ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'],
-                        weekdaysShort : ['Вс','Пн','Вт','Ср','Чт','Пт','Сб']
-                    },
-                    firstDay: 1,
-                    onSelect: function(date) {
-                        document.getElementById('date').value = this.getMoment().format('D.MM.YYYY');
-                    },
-                    onDraw: function() {
-                        var prevButton = document.querySelector('.pika-prev');
-                        var nextButton = document.querySelector('.pika-next');
-                        if (prevButton && nextButton) {
-                            prevButton.style.backgroundColor = '#4CAF50';
-                            prevButton.style.color = 'white';
-                            prevButton.style.border = 'none';
-                            prevButton.style.borderRadius = '5px';
-                            nextButton.style.backgroundColor = '#4CAF50';
-                            nextButton.style.color = 'white';
-                            nextButton.style.border = 'none';
-                            nextButton.style.borderRadius = '5px';
+                    <script>
+                    var picker = new Pikaday({
+                        container: document.getElementById('calendar-container'),
+                        field: document.getElementById('date'),
+                        bound: false,
+                        format: 'YYYY-MM-DD',
+                        i18n: {
+                            previousMonth : 'Предыдущий месяц',
+                            nextMonth     : 'Следующий месяц',
+                            months        : ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+                            weekdays      : ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'],
+                            weekdaysShort : ['Вс','Пн','Вт','Ср','Чт','Пт','Сб']
+                        },
+                        firstDay: 1,
+                        onSelect: function(date) {
+                            document.getElementById('date').value = this.getMoment().format('YYYY-MM-DD');
+                        },
+                        onDraw: function() {
+                            var prevButton = document.querySelector('.pika-prev');
+                            var nextButton = document.querySelector('.pika-next');
+                            var days = document.querySelectorAll('.pika-button.pika-day');
+
+                            // Apply Bootstrap styles without removing existing classes
+                            if (prevButton && nextButton) {
+                                prevButton.classList.add('btn', 'btn-primary');
+                                nextButton.classList.add('btn', 'btn-primary');
+                            }
+                            days.forEach(function(day) {
+                                day.classList.add('btn', 'btn-light'); // Apply bootstrap button class without removing pika-day
+                            });
                         }
-                        var days = document.querySelectorAll('.pika-button.pika-day');
-                        days.forEach(function(day) {
-                            day.style.backgroundColor = '#4CAF50'; // Зеленый фон
-                            day.style.color = 'white'; // Белый текст
-                            day.style.border = 'none';
-                            day.style.borderRadius = '5px';
-                            day.style.minWidth = '30px'; // Устанавливаем минимальную ширину для каждого дня
-                            day.style.height = '30px'; // Устанавливаем высоту для каждого дня
-                            day.style.lineHeight = '30px'; // Центрируем текст по высоте
-                        });
-                    }
-                });
-                </script>
+                    });
+                    </script>
                 </div>
                 <br><br>
                 <label>Time:</label><br>
@@ -149,7 +140,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                         while ($row = mysqli_fetch_assoc($result)) {
                             $time = $row['timePeriod'];
                             $cost = $row['cost'];
-                            echo "<button type='button' name='time' value='$time' onclick='selectTime(\"$time\", $cost, this)'>$time ($cost EUR)</button>";
+                            echo "<button type='button' class='btn btn-primary my-1 mb-1' name='time' value='$time' onclick='selectTime(\"$time\", $cost, this)'>$time ($cost EUR)</button>";
+
                         }
                     } else {
                         echo "No results";
@@ -168,51 +160,71 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                         })
                         .then(bookedTimes => {
                             const timeButtons = document.querySelectorAll('button[name="time"]');
+                            // Reset all buttons to default (available) state first
                             timeButtons.forEach(button => {
-                                button.style.backgroundColor = bookedTimes.includes(button.value) ? 'red' : 'green';
+                                button.classList.add('btn-primary');
+                                button.classList.remove('btn-danger');
+                                button.disabled = false;
+                            });
+                            // Apply 'booked' status to appropriate buttons
+                            bookedTimes.forEach(bookedTime => {
+                                const bookedButton = Array.from(timeButtons).find(button => button.value === bookedTime);
+                                if (bookedButton) {
+                                    bookedButton.classList.remove('btn-primary');
+                                    bookedButton.classList.add('btn-danger');
+                                    bookedButton.disabled = true;
+                                }
                             });
                         })
-                        .catch(error => console.error('Error fetching data: ', error));
+                        .catch(error => {
+                            console.error('Error fetching data: ', error);
+                        });
                 });
                 </script>
+
                 <br><br>
-                <div id="payment-modal" class="modal">
-                    <div class="modal-content">
-                        <h2>Payment</h2>
-                        <p>You have selected:<span id="timePeriod"></span></p>
-                        <p>Total price: <span id="cost"></span></p>
-                        <label for="payment-method">Payment method:</label>
-                        <select id="payment-method" name="payment_method">
-                            <option value="cash">Cash</option>
-                            <option value="card">Card</option>
-                        </select>
-                        <br><br>
-                        <div id="card_details" style="display: none;">
-                            <label for="cardDate">Card Expiry Date:</label>
-                            <input type="text" id="cardDate" name="cardDate">
-                            <br><br>
-                            <label for="cardNumber">Card Number:</label>
-                            <input type="text" id="cardNumber" name="cardNumber">
-                            <br><br>
-                            <label for="cardName">Cardholder Name:</label>
-                            <input type="text" id="cardName" name="cardName">
-                            <br><br>
-                            <label for="cardFilial">Card Filial:</label>
-                            <input type="text" id="cardFilial" name="cardFilial">
-                            <br><br>
-                            <label for="cardCode">Card Security Code:</label>
-                            <input type="text" id="cardCode" name="cardCode">
-                            <br><br>
-                            <input type="checkbox" id="save_card_info" name="save_card_info">
-                            <label for="save_card_info">Save card information for future use</label>
+                <div>
+                    <div class="modal-content card">
+                        <div class="card-header">
+                            <h2>Payment</h2>
                         </div>
-                        <button type="submit" name="submit">Reserve</button>
+                        <div class="card-body">
+                            <p>You have selected: <span id="timePeriod"></span></p>
+                            <p>Total price: <span id="cost"></span></p>
+
+                            <div class="form-group">
+                                <label for="payment-method">Payment method:</label>
+                                <select id="payment-method" name="payment_method" class="form-control">
+                                    <option value="cash">Cash</option>
+                                    <option value="card">Card</option>
+                                </select>
+                            </div>
+
+                            <div id="card_details" style="display: none;">
+                                <div class="form-group">
+                                    <label for="cardDate">Card Expiry Date:</label>
+                                    <input type="text" id="cardDate" name="cardDate" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cardNumber">Card Number:</label>
+                                    <input type="text" id="cardNumber" name="cardNumber" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cardName">Cardholder Name:</label>
+                                    <input type="text" id="cardName" name="cardName" class="form-control">
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" id="save_card_info" name="save_card_info" class="form-check-input">
+                                    <label for="save_card_info" class="form-check-label">Save card information for future use</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Reserve</button>
+                        </div>
                     </div>
                 </div>
             </form>
         </div>
     </div>
-
     <?php
     include '../includes/dbcon.php';
     if (!$conn) {
