@@ -1,8 +1,8 @@
 
 
 <?php
+session_start();  
 include '../includes/dbcon.php';
-
 
 $name = "";
 $category = "";
@@ -183,45 +183,137 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                 </script>
 
                 <br><br>
-                <div>
-                    <div class="modal-content card">
-                        <div class="card-header">
-                            <h2>Payment</h2>
-                        </div>
-                        <div class="card-body">
-                            <p>You have selected: <span id="timePeriod"></span></p>
-                            <p>Total price: <span id="cost"></span></p>
+                <div class="modal-content card">
+                    <div class="card-header">
+                        <h2>Payment</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>You have selected: <span id="timePeriod"></span></p>
+                        <p>Total price: <span id="cost"></span></p>
 
+                        <div class="form-group">
+                            <label for="payment-method">Payment method:</label>
+                            <select id="payment-method" name="payment_method" class="form-control" onchange="togglePaymentMethod()">
+                                <option value="cash">Cash</option>
+                                <option value="card">Card</option>
+                            </select>
+                        </div>
+                        <?php
+                        include '../includes/dbcon.php';
+                        $userId = $_SESSION['user_id'];
+
+                        $sql = "SELECT cardDate, cardNumber, cardName FROM card WHERE user_id = ?";
+                        $stmt = mysqli_prepare($conn, $sql);
+                        mysqli_stmt_bind_param($stmt, 'i', $userId);
+                        mysqli_stmt_execute($stmt);
+                        $result = mysqli_stmt_get_result($stmt);
+                        
+                        $cards = mysqli_fetch_all($result, MYSQLI_ASSOC);
+                        $hasSavedCards = count($cards) > 0;
+                        
+                        mysqli_free_result($result);
+                        mysqli_close($conn);
+                        ?>
+                        
+
+                        <div id="card_details" style="display: none;">
                             <div class="form-group">
-                                <label for="payment-method">Payment method:</label>
-                                <select id="payment-method" name="payment_method" class="form-control">
-                                    <option value="cash">Cash</option>
-                                    <option value="card">Card</option>
+                                <label for="cardDate">Card Expiry Date:</label>
+                                <input type="text" id="cardDate" name="cardDate" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="cardNumber">Card Number:</label>
+                                <input type="text" id="cardNumber" name="cardNumber" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="cardName">Cardholder Name:</label>
+                                <input type="text" id="cardName" name="cardName" class="form-control">
+                            </div>
+                            <div class="form-check mb-2">
+                                <input type="checkbox" id="save_card_info" name="save_card_info" class="form-check-input">
+                                <label for="save_card_info" class="form-check-label">Save card information for future use</label>
+                            </div>
+                        </div>
+
+                        <!-- HTML part for displaying the cards if available -->
+                        <?php if ($hasSavedCards): ?>
+                            <div class="form-group">
+                                <label for="select_saved_card">Use a saved card:</label>
+                                <select id="select_saved_card" name="select_saved_card" class="form-control" onchange="toggleCardDetails(this)">
+                                <option value="">-- Select a saved card --</option>
+                                    <?php foreach ($cards as $card): ?>
+                                        <option value="<?= htmlspecialchars(json_encode([
+                                                'cardDate' => $card['cardDate'],
+                                                'cardNumber' => $card['cardNumber'],
+                                                'cardName' => $card['cardName']
+                                            ])) ?>">
+                                            <?= htmlspecialchars($card['cardName']) ?> (Expires: <?= htmlspecialchars($card['cardDate']) ?>)
+                                        </option>
+                                    <?php endforeach; ?>
                                 </select>
                             </div>
+                        <?php else: ?>
+                            <p>No saved cards available.</p>
+                        <?php endif; ?>
 
-                            <div id="card_details" style="display: none;">
-                                <div class="form-group">
-                                    <label for="cardDate">Card Expiry Date:</label>
-                                    <input type="text" id="cardDate" name="cardDate" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="cardNumber">Card Number:</label>
-                                    <input type="text" id="cardNumber" name="cardNumber" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="cardName">Cardholder Name:</label>
-                                    <input type="text" id="cardName" name="cardName" class="form-control">
-                                </div>
-                                <div class="form-check mb-2">
-                                    <input type="checkbox" id="save_card_info" name="save_card_info" class="form-check-input">
-                                    <label for="save_card_info" class="form-check-label">Save card information for future use</label>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Reserve</button>
-                        </div>
+                        <button type="submit" class="btn btn-primary">Reserve</button>
                     </div>
                 </div>
+                <script>
+
+                        document.addEventListener('DOMContentLoaded', function () {
+                            togglePaymentMethod(); // Ensure correct display when the page loads
+                        });
+
+                        function togglePaymentMethod() {
+                            var paymentMethod = document.getElementById('payment-method').value;
+                            var cardDetailsDiv = document.getElementById('card_details');
+                            var savedCardsDiv = document.getElementById('select_saved_card').parentNode;
+
+                            if (paymentMethod === 'card') {
+                                cardDetailsDiv.style.display = 'block';
+                                if (savedCardsDiv) savedCardsDiv.style.display = 'block';
+                            } else {
+                                cardDetailsDiv.style.display = 'none';
+                                if (savedCardsDiv) savedCardsDiv.style.display = 'none';
+                            }
+                        }
+
+                    document.getElementById('payment-method').addEventListener('change', function () {
+                        var cardDetails = document.getElementById('card_details');
+                        var select = document.getElementById('select_saved_card');
+
+                        if (this.value === 'card') {
+                            cardDetails.style.display = 'block';
+                            if (select && select.value) {
+                                fillCardDetails(JSON.parse(select.value));
+                            }
+                        } else {
+                            cardDetails.style.display = 'none';
+                        }
+                    });
+
+                    function toggleCardDetails(select) {
+                        var cardDetails = document.getElementById('card_details');
+                        if (select.value) {
+                            fillCardDetails(JSON.parse(select.value));
+                        } else {
+                            clearCardDetails();
+                        }
+                    }
+
+                    function fillCardDetails(card) {
+                        document.getElementById('cardDate').value = card.cardDate;
+                        document.getElementById('cardNumber').value = card.cardNumber;
+                        document.getElementById('cardName').value = card.cardName;
+                    }
+
+                    function clearCardDetails() {
+                        document.getElementById('cardDate').value = '';
+                        document.getElementById('cardNumber').value = '';
+                        document.getElementById('cardName').value = '';
+                    }
+                </script>
             </form>
         </div>
     </div>
