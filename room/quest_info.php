@@ -200,7 +200,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                         </div>
                         <?php
                         include '../includes/dbcon.php';
-                        $userId = $_SESSION['user_id'];
+                        
+                        if (!isset($_SESSION['user_id'])) {
+                            error_log('User ID is not set in the session.');
+                            $userId = 'default_value'; // или какое-то безопасное значение по умолчанию
+                        } else {
+                            $userId = $_SESSION['user_id'];
+                        }
 
                         $sql = "SELECT cardDate, cardNumber, cardName FROM card WHERE user_id = ?";
                         $stmt = mysqli_prepare($conn, $sql);
@@ -317,6 +323,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             </form>
         </div>
     </div>
+
+
     <?php
     include '../includes/dbcon.php';
     if (!$conn) {
@@ -328,41 +336,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                     WHERE c.quest_id='$quest_id' 
                     ORDER BY c.creation_date DESC";
     $comments_result = mysqli_query($conn, $comments_query);
+    echo "<div class='container mt-4'>";
     if (mysqli_num_rows($comments_result) > 0) {
         while ($comment = mysqli_fetch_assoc($comments_result)) {
-            echo "<div class='" . ($comment['reply_to'] > 0 ? 'reply' : 'comment') . "'>";
-            echo "<p><strong>@" . $comment['nickname'] . "</strong> <span style='font-size: 0.8em; color: gray;'>posted on " . $comment['creation_date'] . "</span></p>";
-            echo "<p>" . $comment['comment'] . "</p>";
+            echo "<div class='card mb-3 " . ($comment['reply_to'] > 0 ? 'border-primary' : '') . "'>";
+            echo "<div class='card-body'>";
+            echo "<h5 class='card-title'><strong>@" . $comment['nickname'] . "</strong></h5>";
+            echo "<h6 class='card-subtitle mb-2 text-muted'>" . $comment['creation_date'] . "</h6>";
+            echo "<p class='card-text'>" . $comment['comment'] . "</p>";
             if ($comment['reply_to'] > 0) {
-                // Выводим информацию о том, на какой комментарий был дан ответ
                 $reply_to_query = "SELECT nickname FROM users WHERE ID=" . $comment['reply_to'];
                 $reply_to_result = mysqli_query($conn, $reply_to_query);
                 if (mysqli_num_rows($reply_to_result) > 0) {
                     $reply_to_user = mysqli_fetch_assoc($reply_to_result);
-                    echo "<p>Reply to: " . $reply_to_user['nickname'] . "</p>";
+                    echo "<small class='text-muted'>Reply to: " . $reply_to_user['nickname'] . "</small>";
                 }
             }
-            echo "<button type='button' onclick='replyToComment(\"{$comment['ID']}\")'>Reply</button>";
+            echo "<button type='button' class='btn btn-primary mt-2 reply-btn' data-comment-id='{$comment['ID']}'>Reply</button>";
             echo "</div>";
-            
-            // Вставляем форму для ответа прямо под комментарием
-            echo "<div class='reply-popup' id='replyPopup{$comment['ID']}' style='display: none;'>
-            <form action='../comment/quest_comment.php' method='post'>
-                <input type='hidden' name='quest_id' value='$quest_id'>
-                <input type='hidden' name='reply_to' id='replyTo{$comment['ID']}' value='{$comment['ID']}'>
-                <textarea name='comment' placeholder='Enter your reply'></textarea>
-                <button type='submit'>Submit</button>
-            </form>
-            </div>";
+            // Скрытый блок формы
+            echo "<div class='reply-form-container' id='reply-form-{$comment['ID']}' style='display:none;'>";
+            echo "<form class='reply-form' action='../comment/quest_comment.php' method='post'>";
+            echo "<input type='hidden' name='quest_id' value='<?php echo $quest_id; ?>'>";
+            echo "<input type='hidden' name='reply_to' id='replyTo' value=''>";
+            echo "<textarea class='form-control' name='comment' placeholder='Enter your reply'></textarea>";
+            echo "<button type='submit' class='btn btn-primary mt-2'>Submit</button>";
+            echo "</form>";
+            echo "</div>";
+            echo "</div>";
+            //Сделать отдельыне 2 формы под реплай и под комента чтобы не ебать мозг себе
+            //Сделать отдельыне 2 формы под реплай и под комента чтобы не ебать мозг себе
+            //Сделать отдельыне 2 формы под реплай и под комента чтобы не ебать мозг себе
 
-                //КОМЕНТАРИИ НЕЛЬЗЯ УДАЛЯТЬ МЕНЯТЬ , НАДО ФИКСИТЬ!!!!!э
-                //КОМЕНТАРИИ НЕЛЬЗЯ УДАЛЯТЬ МЕНЯТЬ , НАДО ФИКСИТЬ!!!!!
-                //КОМЕНТАРИИ НЕЛЬЗЯ УДАЛЯТЬ МЕНЯТЬ , НАДО ФИКСИТЬ!!!!!
-                //КОМЕНТАРИИ НЕЛЬЗЯ УДАЛЯТЬ МЕНЯТЬ , НАДО ФИКСИТЬ!!!!!
+            
         }
     } else {
-        echo "No comments found.";
+        echo "<p>No comments found.</p>";
     }
+    echo "</div>";
     mysqli_close($conn);
     ?>
 
@@ -385,7 +396,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
 
     <script>
         function selectTime(time, cost, button) {
-            
             document.getElementById("timePeriod").textContent = time;
             document.getElementById("cost").textContent = cost + " EUR";
             var buttons = document.querySelectorAll('button[name="time"]');
@@ -412,15 +422,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             document.getElementById("payment-modal").style.display = "block";
         }
 
-        function replyToComment(commentId) {
-        var replyPopup = document.getElementById('replyPopup' + commentId);
-        document.getElementById('replyTo' + commentId).value = commentId;  // Обновляем правильный элемент
-        replyPopup.style.display = 'block';
-        replyPopup.scrollIntoView({ behavior: 'smooth' });
-    }
+        document.addEventListener("DOMContentLoaded", function() {
+            var replyButtons = document.querySelectorAll('.reply-btn');
+            replyButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var commentId = this.getAttribute('data-comment-id');
+                    var replyForm = document.getElementById('reply-form-' + commentId);
+                    if (replyForm.style.display === 'none') {
+                        replyForm.style.display = 'block';
+                    } else {
+                        replyForm.style.display = 'none';
+                    }
+                });
+            });
+        });
 
-         // Показать/скрыть поля данных карты в зависимости от выбора метода оплаты
-         document.getElementById("payment-method").addEventListener("change", function() {
+        // Обновлённая функция для отображения формы ответа под комментарием
+        function replyToComment(commentId) {
+            var replyForm = document.getElementById('reply-form-' + commentId);
+            if (replyForm.style.display === 'none') {
+                replyForm.style.display = 'block';
+                replyForm.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                replyForm.style.display = 'none';
+            }
+        }
+
+        // Показать/скрыть поля данных карты в зависимости от выбора метода оплаты
+        document.getElementById("payment-method").addEventListener("change", function() {
             var cardDetails = document.getElementById("card_details");
             if (this.value === "card") {
                 cardDetails.style.display = "block";
@@ -432,7 +461,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             }
         });
 
-        // Показать/скрыть поля данных карты в зависимости от выбора метода оплаты при загрузке страницы
+        // Показать/скрыть поля данных карты при загрузке страницы
         window.addEventListener("load", function() {
             var cardDetails = document.getElementById("card_details");
             var paymentMethod = document.getElementById("payment-method");
