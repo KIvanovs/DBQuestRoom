@@ -162,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                         while ($row = mysqli_fetch_assoc($result)) {
                             $time = $row['timePeriod'];
                             $cost = $row['cost'];
-                            echo "<button type='button' class='btn btn-primary my-1 mb-1' name='time' value='$time' onclick='selectTime(\"$time\", $cost, this)'>$time ($cost EUR)</button>";
+                            echo "<button type='button' class='btn btn-primary my-1 mb-1' name='time' value='$time' onclick='chooseTime(\"$time\", $cost, this)'>$time ($cost EUR)</button>";
 
                         }
                     } else {
@@ -204,8 +204,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                         .catch(error => {
                             console.error('Error fetching data: ', error);
                         });
-                });
-                </script>
+                    });
+
+                    function chooseTime(time, cost, element) {
+                        console.log('Time selected:', time, 'Cost:', cost);  // Лог для отладки
+                        document.getElementById('selected-time').value = time;
+                        document.getElementById('cost-input').value = cost;
+                        document.getElementById('timePeriod').innerText = time;
+                        document.getElementById('cost').innerText = cost + ' EUR';
+
+                        const timeButtons = document.querySelectorAll('button[name="time"]');
+                        timeButtons.forEach(button => {
+                            button.classList.remove('selected');
+                        });
+                        element.classList.add('selected');
+                        checkValidityForReservation();
+                    }
+
+                    function checkValidityForReservation() {
+                        const date = document.getElementById('date').value;
+                        const time = document.getElementById('selected-time').value;
+                        const reserveButton = document.getElementById('reserve-button');
+                        console.log('Date:', date, 'Time:', time);  // Лог для отладки
+
+                        if (date && time) {
+                            reserveButton.disabled = false;
+                            console.log('Reserve button enabled');  // Лог для отладки
+                        } else {
+                            reserveButton.disabled = true;
+                            console.log('Reserve button disabled');  // Лог для отладки
+                        }
+                    }
+
+                    document.addEventListener('DOMContentLoaded', function() {
+                        checkValidityForReservation();
+                    });
+                    </script>
 
                 <br><br>
                 <div class="modal-content card">
@@ -287,7 +321,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                             <p>No saved cards available.</p>
                         <?php endif; ?>
 
-                        <button type="submit" class="btn btn-primary">Reserve</button>
+                        <button type="submit" id="reserve-button" class="btn btn-primary" disabled>Reserve</button>
                     </div>
                 </div>
                 <script>
