@@ -110,11 +110,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                                 format: 'YYYY-MM-DD',
                                 minDate: new Date(), // Устанавливаем минимальную дату на сегодняшний день
                                 i18n: {
-                                    previousMonth : 'Предыдущий месяц',
-                                    nextMonth     : 'Следующий месяц',
-                                    months        : ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
-                                    weekdays      : ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'],
-                                    weekdaysShort : ['Вс','Пн','Вт','Ср','Чт','Пт','Сб']
+                                    previousMonth : 'Previous month',
+                                    nextMonth     : 'Next month',
+                                    months        : ['January','February','March','April','May','June','July','August','September','October','November','December'],
+                                    weekdays      : ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+                                    weekdaysShort : ['Su','Mo','Tu','We','Th','Fr','Sa']
                                 },
                                 firstDay: 1,
                                 onSelect: function(date) {
@@ -427,21 +427,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             echo "<input type='hidden' name='comment_id' value='{$comment['ID']}'>";
             echo "<input type='hidden' name='quest_id' value='{$comment['quest_id']}'>";
             echo "<textarea name='comment' class='form-control me-1'>" . $comment['comment'] . "</textarea>";
-            echo "<button type='submit' class='btn btn-success btn-sm me-1'>Сохранить</button>";
-            echo "<button type='button' class='btn btn-secondary btn-sm' onclick='toggleEditMode({$comment['ID']})'>Отмена</button>";
+            echo "<button type='submit' class='btn btn-success btn-sm me-1'>Save</button>";
+            echo "<button type='button' class='btn btn-secondary btn-sm' onclick='toggleEditMode({$comment['ID']})'>Cancel</button>";
             echo "</form>";
 
             // Проверка, является ли пользователь автором комментария
             if ($comment['user_id'] == $_SESSION['user_id']) {
                 // Кнопка "Изменить"
                 echo "<div class='d-flex justify-content-between align-items-center'>";
-                echo "<button type='button' class='btn btn-warning btn-sm mx-1' onclick='toggleEditMode({$comment['ID']})'>Изменить</button>";
+                echo "<button type='button' class='btn btn-warning btn-sm mx-1' onclick='toggleEditMode({$comment['ID']})'>Udpate</button>";
                 
                 // Форма для кнопки "Удалить"
                 echo "<form method='post' action='../comment/delete_comment.php' class='delete-comment-form' data-comment-id='{$comment['ID']}'>";
                 echo "<input type='hidden' name='comment_id' value='{$comment['ID']}'>";
                 echo "<input type='hidden' name='quest_id' value='{$comment['quest_id']}'>"; 
-                echo "<button type='submit' class='btn btn-danger btn-sm mx-1 delete-comment-btn'>Удалить</button>";
+                echo "<button type='submit' class='btn btn-danger btn-sm mx-1 delete-comment-btn'>Delete</button>";
                 echo "</form>";
                 echo "</div>";
             }
