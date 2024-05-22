@@ -72,62 +72,84 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
     include_once '../includes/header.php';
     ?>
 
-<div class="card" style="width: 18rem;">  <!-- Card with fixed width -->
-    <img src="<?php echo $photoPath; ?>" class="card-img-top" alt="photo of <?php echo $name; ?>" style="max-width: 200px; max-height: 200px;">
-    <div class="card-body">
-        <h5 class="card-title"><?php echo $name; ?></h5>
-        <p class="card-text">Category: <?php echo $category; ?></p>
-        <p class="card-text">Address: <?php echo $address; ?></p>
-        <p class="card-text">Number of people: <?php echo $peopleAmount; ?></p>
-        <p class="card-text">Age limit: <?php echo $ageLimit; ?></p>
-        <p class="card-text">Description: <?php echo $description; ?></p>
+<style>
+/* Скрытие выпадающих списков выбора месяца и года */
+.pika-select-month,
+.pika-select-year {
+    display: none;
+}
+
+</style>
+
+<div style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f8f9fa;">
+    <div class="card" style="width: 50rem; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+        <img src="<?php echo $photoPath; ?>" class="card-img-top" alt="photo of <?php echo $name; ?>" style="width: 100%; height: 300px; object-fit: cover;">
+        <div class="card-body">
+            <h2 class="card-title" style="font-weight: bold;"><?php echo $name; ?></h2>
+            <p class="card-text" style="font-size: 1.1em;">Category: <strong><?php echo $category; ?></strong></p>
+            <p class="card-text" style="font-size: 1.1em;">Address: <strong><?php echo $address; ?></strong></p>
+            <p class="card-text" style="font-size: 1.1em;">Number of people: <strong><?php echo $peopleAmount; ?></strong></p>
+            <p class="card-text" style="font-size: 1.1em;">Age limit: <strong><?php echo $ageLimit; ?></strong> +</p>
+            <p class="card-text" style="font-size: 1.1em;">Description: <strong><?php echo $description; ?></strong></p>
 
             <form action="../room/reserve.php" method="post">
-                <h1>Reservation</h1>
+                <h3 style="margin-top: 20px;">Reservation</h3>
                 <input type="hidden" name="quest_id" value="<?php echo $quest_id; ?>">
                 <input type="hidden" name="discount" value="<?php echo $discount; ?>">
                 <input type="hidden" name="time" id="selected-time">
                 <input type="hidden" name="cost" id="cost-input">
-                <div id="calendar-container" class="card" style="width: auto; background-color: #f9f9f9;">
-                    <label for="date" class="card-header">Date:</label>
-                    <input type="text" id="date" name="date" class="form-control">
-                
+                <div class="d-flex justify-content-between" style="margin-top: 20px;">
+                    <div id="calendar-container" class="card" style="width: 50%; background-color: #f9f9f9; padding: 20px; margin-top: 20px;">
+                        <label for="date" class="card-header" style="font-size: 1.2em;">Date:</label>
+                        <input type="text" id="date" name="date" class="form-control">
+                        <script>
+                            var picker = new Pikaday({
+                                container: document.getElementById('calendar-container'),
+                                field: document.getElementById('date'),
+                                bound: false,
+                                format: 'YYYY-MM-DD',
+                                minDate: new Date(), // Устанавливаем минимальную дату на сегодняшний день
+                                i18n: {
+                                    previousMonth : 'Предыдущий месяц',
+                                    nextMonth     : 'Следующий месяц',
+                                    months        : ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+                                    weekdays      : ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'],
+                                    weekdaysShort : ['Вс','Пн','Вт','Ср','Чт','Пт','Сб']
+                                },
+                                firstDay: 1,
+                                onSelect: function(date) {
+                                    document.getElementById('date').value = this.getMoment().format('YYYY-MM-DD');
+                                },
+                                onDraw: function() {
+                                    var prevButton = document.querySelector('.pika-prev');
+                                    var nextButton = document.querySelector('.pika-next');
+                                    var days = document.querySelectorAll('.pika-button.pika-day');
 
-                    <script>
-                    var picker = new Pikaday({
-                        container: document.getElementById('calendar-container'),
-                        field: document.getElementById('date'),
-                        bound: false,
-                        format: 'YYYY-MM-DD',
-                        i18n: {
-                            previousMonth : 'Предыдущий месяц',
-                            nextMonth     : 'Следующий месяц',
-                            months        : ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
-                            weekdays      : ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'],
-                            weekdaysShort : ['Вс','Пн','Вт','Ср','Чт','Пт','Сб']
-                        },
-                        firstDay: 1,
-                        onSelect: function(date) {
-                            document.getElementById('date').value = this.getMoment().format('YYYY-MM-DD');
-                        },
-                        onDraw: function() {
-                            var prevButton = document.querySelector('.pika-prev');
-                            var nextButton = document.querySelector('.pika-next');
-                            var days = document.querySelectorAll('.pika-button.pika-day');
+                                    // Apply Bootstrap styles
+                                    if (prevButton && nextButton) {
+                                        prevButton.classList.add('btn', 'btn-primary');
+                                        nextButton.classList.add('btn', 'btn-primary');
+                                    }
+                                    days.forEach(function(day) {
+                                        day.classList.add('btn', 'btn-light'); // Apply bootstrap button class
 
-                            // Apply Bootstrap styles without removing existing classes
-                            if (prevButton && nextButton) {
-                                prevButton.classList.add('btn', 'btn-primary');
-                                nextButton.classList.add('btn', 'btn-primary');
-                            }
-                            days.forEach(function(day) {
-                                day.classList.add('btn', 'btn-light'); // Apply bootstrap button class without removing pika-day
+                                        // Disable past dates
+                                        var date = new Date(day.getAttribute('data-pika-year'), day.getAttribute('data-pika-month'), day.getAttribute('data-pika-day'));
+                                        if (date < new Date()) {
+                                            day.classList.add('btn-secondary');
+                                            day.disabled = true;
+                                            day.style.pointerEvents = 'none'; // Make button unclickable
+                                            day.style.backgroundColor = '#6c757d'; // Darken background
+                                            day.style.color = '#fff'; // Change text color for contrast
+                                        }
+                                    });
+                                }
                             });
-                        }
-                    });
-                    </script>
-                </div>
+                            </script>
+                    </div>
+                
                 <br><br>
+                <div style="width: 45%; padding: 20px; margin-top: 20px;">
                 <label>Time:</label><br>
                 <?php
                     include '../includes/dbcon.php';
@@ -147,7 +169,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                         echo "No results";
                     }
                     mysqli_close($conn);
+                
                 ?>
+                </div>
+                </div>
                 <script>
                 document.getElementById('date').addEventListener('change', function() {
                     var selectedDate = this.value;
@@ -323,76 +348,158 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             </form>
         </div>
     </div>
-
+</div>
 
     <?php
     include '../includes/dbcon.php';
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
     }
-    $comments_query = "SELECT c.*, u.nickname 
-                    FROM comment c 
-                    LEFT JOIN users u ON c.user_id = u.ID
-                    WHERE c.quest_id='$quest_id' 
-                    ORDER BY c.creation_date DESC";
+    ?>
+    <div class="container d-flex justify-content-center mt-5">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Leave a Comment</h5>
+                    <form action="../comment/quest_comment.php" method="post" class="mb-3">
+                        <input type="hidden" name="quest_id" value="<?php echo $quest_id; ?>">
+                        <input type="hidden" name="reply_to" id="replyTo" value="">
+
+                        <div class="form-group mb-3">
+                            <label for="comment" class="form-label">Enter your comment</label>
+                            <textarea name="comment" id="comment" class="form-control" placeholder="Enter your comment" rows="3"></textarea>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php
+    
+    $comments_query = "SELECT c.*, u.nickname
+    FROM comment c
+    LEFT JOIN users u ON c.user_id = u.ID
+    WHERE c.quest_id='$quest_id'
+    ORDER BY c.ID DESC";
+
     $comments_result = mysqli_query($conn, $comments_query);
-    echo "<div class='container mt-4'>";
-    if (mysqli_num_rows($comments_result) > 0) {
-        while ($comment = mysqli_fetch_assoc($comments_result)) {
-            echo "<div class='card mb-3 " . ($comment['reply_to'] > 0 ? 'border-primary' : '') . "'>";
+    $comments = [];
+    while ($comment = mysqli_fetch_assoc($comments_result)) {
+        $comments[$comment['ID']] = $comment;
+        $comments[$comment['ID']]['replies'] = [];
+    }
+
+    // Organize comments into a nested structure
+    foreach ($comments as $id => $comment) {
+        if ($comment['reply_to'] > 0 && isset($comments[$comment['reply_to']])) {
+            $comments[$comment['reply_to']]['replies'][] = &$comments[$id];
+        }
+    }
+
+    // Function to display comments
+    function display_comments($comments, $reply_to = 0, $level = 0) {
+        $sorted_comments = array_filter($comments, function($comment) use ($reply_to) {
+            return $comment['reply_to'] == $reply_to;
+        });
+
+        usort($sorted_comments, function($a, $b) {
+            return strtotime($b['creation_date']) - strtotime($a['creation_date']);
+        });
+
+        foreach ($sorted_comments as $comment) {
+            $margin = $level > 0 ? "20px" : "0px";
+            echo "<div class='card mb-3 mx-auto' style='margin-left: $margin; max-width: 600px;'>";
             echo "<div class='card-body'>";
             echo "<h5 class='card-title'><strong>@" . $comment['nickname'] . "</strong></h5>";
             echo "<h6 class='card-subtitle mb-2 text-muted'>" . $comment['creation_date'] . "</h6>";
-            echo "<p class='card-text'>" . $comment['comment'] . "</p>";
-            if ($comment['reply_to'] > 0) {
-                $reply_to_query = "SELECT nickname FROM users WHERE ID=" . $comment['reply_to'];
-                $reply_to_result = mysqli_query($conn, $reply_to_query);
-                if (mysqli_num_rows($reply_to_result) > 0) {
-                    $reply_to_user = mysqli_fetch_assoc($reply_to_result);
-                    echo "<small class='text-muted'>Reply to: " . $reply_to_user['nickname'] . "</small>";
-                }
+             // Обертка для комментария и кнопок
+            echo "<div class='d-flex justify-content-between align-items-center'>";
+            
+            // Отображение комментария
+            echo "<p id='comment-text-{$comment['ID']}' class='card-text'>" . $comment['comment'] . "</p>";
+            
+            // Форма для редактирования комментария
+            echo "<form id='edit-form-{$comment['ID']}' method='post' action='../comment/edit_comment.php' style='display: none;' class=' w-100'>";
+            echo "<input type='hidden' name='comment_id' value='{$comment['ID']}'>";
+            echo "<input type='hidden' name='quest_id' value='{$comment['quest_id']}'>";
+            echo "<textarea name='comment' class='form-control me-1'>" . $comment['comment'] . "</textarea>";
+            echo "<button type='submit' class='btn btn-success btn-sm me-1'>Сохранить</button>";
+            echo "<button type='button' class='btn btn-secondary btn-sm' onclick='toggleEditMode({$comment['ID']})'>Отмена</button>";
+            echo "</form>";
+
+            // Проверка, является ли пользователь автором комментария
+            if ($comment['user_id'] == $_SESSION['user_id']) {
+                // Кнопка "Изменить"
+                echo "<div class='d-flex justify-content-between align-items-center'>";
+                echo "<button type='button' class='btn btn-warning btn-sm mx-1' onclick='toggleEditMode({$comment['ID']})'>Изменить</button>";
+                
+                // Форма для кнопки "Удалить"
+                echo "<form method='post' action='../comment/delete_comment.php' class='delete-comment-form' data-comment-id='{$comment['ID']}'>";
+                echo "<input type='hidden' name='comment_id' value='{$comment['ID']}'>";
+                echo "<input type='hidden' name='quest_id' value='{$comment['quest_id']}'>"; 
+                echo "<button type='submit' class='btn btn-danger btn-sm mx-1 delete-comment-btn'>Удалить</button>";
+                echo "</form>";
+                echo "</div>";
             }
-            echo "<button type='button' class='btn btn-primary mt-2 reply-btn' data-comment-id='{$comment['ID']}'>Reply</button>";
+            
             echo "</div>";
-            // Скрытый блок формы
-            echo "<div class='reply-form-container' id='reply-form-{$comment['ID']}' style='display:none;'>";
-            echo "<form class='reply-form' action='../comment/quest_comment.php' method='post'>";
-            echo "<input type='hidden' name='quest_id' value='<?php echo $quest_id; ?>'>";
-            echo "<input type='hidden' name='reply_to' id='replyTo' value=''>";
-            echo "<textarea class='form-control' name='comment' placeholder='Enter your reply'></textarea>";
-            echo "<button type='submit' class='btn btn-primary mt-2'>Submit</button>";
+
+            echo "<button type='button' class='btn btn-primary mt-2 reply-btn' data-comment-id='{$comment['ID']}'>Reply</button>";
+
+            // Скрытая форма ответа
+            echo "<div id='reply-form-{$comment['ID']}' class='reply-form' style='display: none; margin-top: 10px;'>";
+            echo "<form action='../comment/quest_comment.php' method='post' class='mb-3 p-3 bg-light border rounded'>";
+            echo "<input type='hidden' name='quest_id' value='{$comment['quest_id']}'>";
+            echo "<input type='hidden' name='reply_to' value='{$comment['ID']}'>";
+            echo "<div class='form-group mb-3'>";
+            echo "<label for='reply-comment-{$comment['ID']}' class='form-label'>Enter your reply</label>";
+            echo "<textarea name='comment' id='reply-comment-{$comment['ID']}' class='form-control' placeholder='Enter your reply' rows='3'></textarea>";
+            echo "</div>";
+            echo "<div class='text-end'>";
+            echo "<button type='submit' class='btn btn-primary'>Submit</button>";
+            echo "</div>";
             echo "</form>";
             echo "</div>";
-            echo "</div>";
-            //Сделать отдельыне 2 формы под реплай и под комента чтобы не ебать мозг себе
-            //Сделать отдельыне 2 формы под реплай и под комента чтобы не ебать мозг себе
-            //Сделать отдельыне 2 формы под реплай и под комента чтобы не ебать мозг себе
 
-            
+            // Кнопка для отображения/скрытия ответов
+            echo "<button type='button' class='btn btn-secondary mt-2 replies-btn' data-comment-id='{$comment['ID']}'>Replies</button>";
+
+            // Скрытая область для ответов
+            echo "<div id='replies-{$comment['ID']}' class='replies' style='display: none; margin-top: 10px;'>";
+            display_comments($comments, $comment['ID'], $level + 1);
+            echo "</div>";
+
+            echo "</div>"; // Close card-body
+            echo "</div>"; // Close card
         }
-    } else {
-        echo "<p>No comments found.</p>";
     }
+
+    // Display all comments
+    echo "<div class='container'>";
+    display_comments($comments);
     echo "</div>";
+
     mysqli_close($conn);
     ?>
+    <script>
+    function toggleEditMode(commentId) {
+        const commentText = document.getElementById('comment-text-' + commentId);
+        const editForm = document.getElementById('edit-form-' + commentId);
 
-    <form action="../comment/quest_comment.php" method="post">
-        <input type="hidden" name="quest_id" value="<?php echo $quest_id; ?>">
-        <input type="hidden" name="reply_to" id="replyTo" value="">
-        <textarea name="comment" placeholder="Enter your comment"></textarea>
-        <button type="submit">Submit</button>
-    </form>
+        if (commentText.style.display === 'none') {
+            commentText.style.display = 'block';
+            editForm.style.display = 'none';
+        } else {
+            commentText.style.display = 'none';
+            editForm.style.display = 'block';
+        }
+    }
+    </script>
 
-    <!-- Popup for replying to comments -->
-    <div class="reply-popup" id="replyPopup">
-        <form action="../comment/quest_comment.php" method="post">
-            <input type="hidden" name="quest_id" value="<?php echo $quest_id; ?>">
-            <input type="hidden" name="reply_to" id="replyTo" value="">
-            <textarea name="comment" placeholder="Enter your reply"></textarea>
-            <button type="submit">Submit</button>
-        </form>
-    </div>
 
     <script>
         function selectTime(time, cost, button) {
@@ -422,16 +529,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             document.getElementById("payment-modal").style.display = "block";
         }
 
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener('DOMContentLoaded', function () {
             var replyButtons = document.querySelectorAll('.reply-btn');
-            replyButtons.forEach(function(button) {
-                button.addEventListener('click', function() {
+
+            replyButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
                     var commentId = this.getAttribute('data-comment-id');
                     var replyForm = document.getElementById('reply-form-' + commentId);
+
                     if (replyForm.style.display === 'none') {
                         replyForm.style.display = 'block';
                     } else {
                         replyForm.style.display = 'none';
+                    }
+                });
+            });
+
+            var repliesButtons = document.querySelectorAll('.replies-btn');
+
+            repliesButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var commentId = this.getAttribute('data-comment-id');
+                    var repliesDiv = document.getElementById('replies-' + commentId);
+
+                    if (repliesDiv.style.display === 'none') {
+                        repliesDiv.style.display = 'block';
+                    } else {
+                        repliesDiv.style.display = 'none';
                     }
                 });
             });
