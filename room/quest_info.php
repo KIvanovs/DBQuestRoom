@@ -414,11 +414,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
     </div>
     <?php
     
-    $comments_query = "SELECT c.*, u.nickname
+    $comments_query = "
+    SELECT c.*, u.nickname, a.name AS admin_name
     FROM comment c
     LEFT JOIN users u ON c.user_id = u.ID
+    LEFT JOIN admin a ON c.admin_id = a.ID
     WHERE c.quest_id='$quest_id'
-    ORDER BY c.ID DESC";
+    ORDER BY c.ID DESC
+";
 
     $comments_result = mysqli_query($conn, $comments_query);
     $comments = [];
@@ -448,7 +451,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             $margin = $level > 0 ? "20px" : "0px";
             echo "<div class='card mb-3 mx-auto' style='margin-left: $margin; max-width: 600px;'>";
             echo "<div class='card-body'>";
-            echo "<h5 class='card-title'><strong>@" . $comment['nickname'] . "</strong></h5>";
+
+
+             // Display the user's nickname or admin's name
+            if (!empty($comment['admin_name'])) {
+                echo "<h5 class='card-title'><strong>Admin @ " . $comment['admin_name'] . "</strong></h5>";
+            } else {
+                    echo "<h5 class='card-title'><strong>@" . $comment['nickname'] . "</strong></h5>";
+            }
+
+
+
             echo "<h6 class='card-subtitle mb-2 text-muted'>" . $comment['creation_date'] . "</h6>";
              // Обертка для комментария и кнопок
             echo "<div class='d-flex justify-content-between align-items-center'>";
@@ -466,10 +479,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             echo "</form>";
 
             // Проверка, является ли пользователь автором комментария
-            if ($comment['user_id'] == $_SESSION['user_id']) {
-                // Кнопка "Изменить"
+            if (isset($comment['user_id']) && isset($_SESSION['user_id']) && $comment['user_id'] == $_SESSION['user_id'] || (isset($_SESSION['admin_id']) && $_SESSION['admin_id'])) {
+                
                 echo "<div class='d-flex justify-content-between align-items-center'>";
-                echo "<button type='button' class='btn btn-warning btn-sm mx-1' onclick='toggleEditMode({$comment['ID']})'>Udpate</button>";
+
+                if (isset($comment['user_id']) && isset($_SESSION['user_id']) && $comment['user_id'] == $_SESSION['user_id']) {
+                    echo "<button type='button' class='btn btn-warning btn-sm mx-1' onclick='toggleEditMode({$comment['ID']})'>Update</button>";
+                }
                 
                 // Форма для кнопки "Удалить"
                 echo "<form method='post' action='../comment/delete_comment.php' class='delete-comment-form' data-comment-id='{$comment['ID']}'>";

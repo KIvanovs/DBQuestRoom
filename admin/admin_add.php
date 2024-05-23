@@ -5,10 +5,12 @@ include '../includes/dbcon.php';
 
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
+    
 }
 
+
 // Check if form is submitted
-if(isset($_POST['submit'])){
+if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
     // Get form data
     $name =  $_POST['name'];
