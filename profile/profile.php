@@ -1,4 +1,5 @@
 <?php
+$pageTitle = "Profile info" ;
 include '../includes/header.php';
 include '../includes/dbcon.php';
 
