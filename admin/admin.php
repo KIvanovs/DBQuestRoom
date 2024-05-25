@@ -1,11 +1,11 @@
 <?php
-$pageTitle = 'Admin info';
+$pageTitle = 'Employee info';
 include_once '../includes/header.php';
 ?>
 
 
 <div class="container mt-5">
-    <h1>Admin info</h1>
+    <h1>Employee info</h1>
     <?php
     if (isset($_SESSION['admin_name'])) {
         echo "<p class='alert alert-success'>Welcome, " . $_SESSION['admin_name'] . "!</p>";
@@ -17,7 +17,7 @@ include_once '../includes/header.php';
     <hr>
     <?php
     if (isset($_SESSION['admin_id'])) {
-        echo "<h2>Add Admin</h2>";
+        echo "<h2>Add Employee</h2>";
         echo "<form method='post' action='../admin/admin_add.php' class='needs-validation' novalidate>";
         echo "<div class='form-group'>";
         echo "<label for='name'>Name:</label>";

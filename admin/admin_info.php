@@ -22,7 +22,7 @@ $result = mysqli_query($conn, $query);
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
 <div class="container mt-5">
-    <h2>Admin List</h2>
+    <h2>Employee List</h2>
     <?php
     // Check if any admins were found
     if (mysqli_num_rows($result) > 0) {

@@ -1,5 +1,4 @@
 
-
 <?php
 session_start();  
 include '../includes/dbcon.php';
@@ -176,7 +175,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                 <script>
                 document.getElementById('date').addEventListener('change', function() {
                     var selectedDate = this.value;
-                    fetch('../room/reserve_check.php?date=' + selectedDate)
+                    var questId = document.querySelector('input[name="quest_id"]').value;
+                    fetch('../room/reserve_check.php?date=' + selectedDate + '&quest_id=' + questId)
                         .then(response => {
                             if (!response.ok) {
                                 throw new Error('Network response was not ok ' + response.statusText);
@@ -204,42 +204,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                         .catch(error => {
                             console.error('Error fetching data: ', error);
                         });
+                });
+
+                function chooseTime(time, cost, element) {
+                    console.log('Time selected:', time, 'Cost:', cost);  // Лог для отладки
+                    document.getElementById('selected-time').value = time;
+                    document.getElementById('cost-input').value = cost;
+                    document.getElementById('timePeriod').innerText = time;
+                    document.getElementById('cost').innerText = cost + ' EUR';
+
+                    const timeButtons = document.querySelectorAll('button[name="time"]');
+                    timeButtons.forEach(button => {
+                        button.classList.remove('selected');
                     });
+                    element.classList.add('selected');
+                    checkValidityForReservation();
+                }
 
-                    function chooseTime(time, cost, element) {
-                        console.log('Time selected:', time, 'Cost:', cost);  // Лог для отладки
-                        document.getElementById('selected-time').value = time;
-                        document.getElementById('cost-input').value = cost;
-                        document.getElementById('timePeriod').innerText = time;
-                        document.getElementById('cost').innerText = cost + ' EUR';
+                function checkValidityForReservation() {
+                    const date = document.getElementById('date').value;
+                    const time = document.getElementById('selected-time').value;
+                    const reserveButton = document.getElementById('reserve-button');
+                    console.log('Date:', date, 'Time:', time);  // Лог для отладки
 
-                        const timeButtons = document.querySelectorAll('button[name="time"]');
-                        timeButtons.forEach(button => {
-                            button.classList.remove('selected');
-                        });
-                        element.classList.add('selected');
-                        checkValidityForReservation();
+                    if (date && time) {
+                        reserveButton.disabled = false;
+                        console.log('Reserve button enabled');  // Лог для отладки
+                    } else {
+                        reserveButton.disabled = true;
+                        console.log('Reserve button disabled');  // Лог для отладки
                     }
+                }
 
-                    function checkValidityForReservation() {
-                        const date = document.getElementById('date').value;
-                        const time = document.getElementById('selected-time').value;
-                        const reserveButton = document.getElementById('reserve-button');
-                        console.log('Date:', date, 'Time:', time);  // Лог для отладки
-
-                        if (date && time) {
-                            reserveButton.disabled = false;
-                            console.log('Reserve button enabled');  // Лог для отладки
-                        } else {
-                            reserveButton.disabled = true;
-                            console.log('Reserve button disabled');  // Лог для отладки
-                        }
-                    }
-
-                    document.addEventListener('DOMContentLoaded', function() {
-                        checkValidityForReservation();
-                    });
-                    </script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    checkValidityForReservation();
+                });
+            </script>
 
                 <br><br>
                 <div class="modal-content card">

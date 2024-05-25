@@ -112,19 +112,66 @@ if(mysqli_num_rows($result) == 1){
     $row = mysqli_fetch_assoc($result);
 
     // Display edit form
-    echo "<form method='post' action=''>";
-    echo "<p><label for='name'>Name:</label> <input type='text' name='name' value='" . $row['name'] . "'></p>";
-    echo "<p><label for='surname'>Surname:</label> <input type='text' name='surname' value='" . $row['surname'] . "'></p>";
-    echo "<p><label for='email'>Email:</label> <input type='email' name='email' value='" . $row['email'] . "'></p>";
-    echo "<p><label for='personCode'>Personal Code:</label> <input type='text' name='personCode' value='" . $row['personCode'] . "'></p>";
-    echo "<p><label for='password'>Password:</label> <input type='password' name='password'></p>";
-    echo "<p><label for='phoneNumber'>Phone Number:</label> <input type='text' name='phoneNumber' value='" . $row['phoneNumber'] . "'></p>";
-    echo "<input type='hidden' name='admin_id' value='" . $row['ID'] . "'>";
-    echo "<input type='submit' name='update_admin' value='Update'>";
-    echo "</form>";
+    echo "
+    <!DOCTYPE html>
+    <html lang='en'>
+    <head>
+        <meta charset='UTF-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
+        <title>Edit Admin</title>
+        <link href='https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css' rel='stylesheet'>
+    </head>
+    <body>
+    <div class='container mt-5'>
+        <div class='row'>
+            <div class='col-md-6 offset-md-3'>
+                <div class='card'>
+                    <div class='card-header'>
+                        <h3 class='card-title'>Edit Admin</h3>
+                    </div>
+                    <div class='card-body'>
+                        <form method='post' action=''>
+                            <div class='form-group'>
+                                <label for='name'>Name:</label>
+                                <input type='text' class='form-control' name='name' value='" . $row['name'] . "'>
+                            </div>
+                            <div class='form-group'>
+                                <label for='surname'>Surname:</label>
+                                <input type='text' class='form-control' name='surname' value='" . $row['surname'] . "'>
+                            </div>
+                            <div class='form-group'>
+                                <label for='email'>Email:</label>
+                                <input type='email' class='form-control' name='email' value='" . $row['email'] . "'>
+                            </div>
+                            <div class='form-group'>
+                                <label for='personCode'>Personal Code:</label>
+                                <input type='text' class='form-control' name='personCode' value='" . $row['personCode'] . "'>
+                            </div>
+                            <div class='form-group'>
+                                <label for='password'>Password:</label>
+                                <input type='password' class='form-control' name='password'>
+                            </div>
+                            <div class='form-group'>
+                                <label for='phoneNumber'>Phone Number:</label>
+                                <input type='text' class='form-control' name='phoneNumber' value='" . $row['phoneNumber'] . "'>
+                            </div>
+                            <input type='hidden' name='admin_id' value='" . $row['ID'] . "'>
+                            <button type='submit' name='update_admin' class='btn btn-primary'>Update</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src='https://code.jquery.com/jquery-3.5.1.slim.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js'></script>
+    <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js'></script>
+    </body>
+    </html>";
 } else {
     // Admin not found
     echo "Admin not found.";
 }
 
 mysqli_close($conn);
+?>
