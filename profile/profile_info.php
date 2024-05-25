@@ -70,7 +70,7 @@ if (mysqli_num_rows($result) > 0) {
 
             while ($reservation_row = mysqli_fetch_assoc($reservations_result)) {
                 echo '<li style="margin-bottom: 10px;">';
-                echo 'Reservation ID: ' . $reservation_row['ID'] . ', Date: ' . $reservation_row['date'] . ', Room ID: ' . $reservation_row['room_id'];
+                echo 'Reservation ID: ' . $reservation_row['ID'] . ', Date: ' . $reservation_row['date'] . ', Time: ' . $reservation_row['time'] .' Room ID: ' . $reservation_row['room_id'];
                 echo '<div style="display: flex; gap: 10px; margin-top: 5px;">';
                 echo '<form method="post" action="../room/delete_reservation.php" style="display:inline;">';
                 echo '<input type="hidden" name="reserv_id" value="' . $reservation_row['ID'] . '">';

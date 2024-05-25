@@ -1,5 +1,7 @@
 <?php
-session_start();
+
+
+include '../includes/header.php';
 // Check if the user is not an admin
 if (!isset($_SESSION['admin_id']) || empty($_SESSION['admin_id'])) {
     // Redirect the user to the admin login page

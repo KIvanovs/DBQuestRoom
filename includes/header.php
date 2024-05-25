@@ -31,7 +31,7 @@
                 echo "<li class='nav-item'><a class='nav-link' href='../profile/profile.php'>Profile</a></li>";
             }
             if (isset($_SESSION['admin_id']) && isset($_SESSION['admin_name'])) {
-                echo "<li class='nav-item'><a class='nav-link' href='../admin/admin.php'>Employee info</a></li>";
+                echo "<li class='nav-item'><a class='nav-link' href='../admin/admin.php'>Admin/Employee info</a></li>";
                 echo "<li class='nav-item'><a class='nav-link' href='../room/quest_form.php'>Add quest room</a></li>";
                 echo "<li class='nav-item'><a class='nav-link' href='../profile/profile_info.php'>User's info</a></li>";
                 echo "<li class='nav-item'><a class='nav-link' href='../charts/chart_graphs.php'>Charts</a></li>";
@@ -56,6 +56,4 @@
         </ul>
     </div>
 </nav>
-
-
 

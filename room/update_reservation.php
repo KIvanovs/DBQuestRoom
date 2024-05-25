@@ -14,7 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $room_id = $_POST['room_id'];
     $date = $_POST['date'];
     $time = $_POST['time'];
-    $discount = $_POST['discount'];
     $cost = $_POST['cost'];
     $reserv_id = $_POST['reserv_id'];
 
@@ -37,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (mysqli_query($conn, $query)) {
         echo "Reservation updated successfully!";
         echo "<a href='../profile/profile_info.php'>Back to info page</a>";
+        header("Location: ../profile/profile_info.php");
     } else {
         echo "Error saving reservation: " . mysqli_error($conn);
     }
