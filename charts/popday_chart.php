@@ -1,5 +1,4 @@
 <?php
-
 $dbhost = 'localhost';
 $dbname = 'testdb';
 $dbuser = 'root';
@@ -10,7 +9,13 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$sql = "SELECT DATE(date) AS reservation_date, COUNT(*) AS reservation_count FROM reservation GROUP BY WEEKDAY(reservation_date)";
+$selectedYear = isset($_POST['year']) ? $_POST['year'] : date('Y');
+$selectedMonth = isset($_POST['month']) ? $_POST['month'] : date('m');
+
+$sql = "SELECT DATE(date) AS reservation_date, COUNT(*) AS reservation_count 
+        FROM reservation 
+        WHERE YEAR(date) = '$selectedYear' AND MONTH(date) = '$selectedMonth'
+        GROUP BY WEEKDAY(reservation_date)";
 
 $result = $conn->query($sql);
 
@@ -42,7 +47,7 @@ $conn->close();
         window.addEventListener('load', function () {
             var chart = new CanvasJS.Chart("popdayChartContainer", {
                 animationEnabled: true,
-                theme: "light2", // "light1", "light2", "dark1", "dark2"
+                theme: "light2",
                 title: {
                     text: "Number of Reservations by Day of the Week"
                 },

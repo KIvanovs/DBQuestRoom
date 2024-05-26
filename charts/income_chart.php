@@ -1,5 +1,4 @@
 <?php
-// Replace with your database connection code
 $dbhost = 'localhost';
 $dbname = 'testdb';
 $dbuser = 'root';
@@ -10,18 +9,22 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$sql = "SELECT SUM(cost) as total_cost, (creation_date) as date FROM reservation GROUP BY creation_date";
+$selectedYear = isset($_POST['year']) ? $_POST['year'] : date('Y');
+$selectedMonth = isset($_POST['month']) ? $_POST['month'] : date('m');
+
+$sql = "SELECT SUM(cost) as total_cost, creation_date as date 
+        FROM reservation 
+        WHERE YEAR(creation_date) = '$selectedYear' AND MONTH(creation_date) = '$selectedMonth'
+        GROUP BY creation_date";
 $result = $conn->query($sql);
 
 $dataPoints = array();
 while ($row = $result->fetch_assoc()) {
     $dataPoints[] = array(
-        "x" => strtotime($row['date']) * 1000, // Convert date to timestamp in milliseconds
+        "x" => strtotime($row['date']) * 1000,
         "y" => $row['total_cost']
     );
 }
-
-
 
 $conn->close();
 ?>
@@ -36,7 +39,7 @@ $conn->close();
                 animationEnabled: true,
                 theme: "light2",
                 title: {
-                    text: "Site Traffic"
+                    text: "Income"
                 },
                 axisX: {
                     valueFormatString: "DD MMM"
@@ -44,7 +47,6 @@ $conn->close();
                 axisY: {
                     title: "Total Cost",
                     includeZero: true,
-                    
                 },
                 data: [{
                     type: "splineArea",
@@ -57,11 +59,11 @@ $conn->close();
             });
 
             chart.options.data[0].dataPoints.forEach(function (point) {
-            point.y = parseFloat(point.y);
-        });
+                point.y = parseFloat(point.y);
+            });
 
-        chart.render();
-    });
+            chart.render();
+        });
     </script>
 </head>
 <body>
