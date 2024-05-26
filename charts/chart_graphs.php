@@ -12,33 +12,35 @@ $selectedMonth = isset($_POST['month']) ? $_POST['month'] : date('m');
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-4">
                 <form method="post" class="mb-3">
-                    <div class="form-group">
-                        <label for="year">Select Year:</label>
-                        <select name="year" id="year" class="form-control">
-                            <?php
-                            for ($i = 2020; $i <= date('Y'); $i++) {
-                                echo "<option value='$i'" . ($i == $selectedYear ? ' selected' : '') . ">$i</option>";
-                            }
-                            ?>
-                        </select>
-                    </div>
+                    <div class="mb-3 d-flex flex-row gap-2 align-items-end">
+                        <div class="form-group flex-fill">
+                            <label for="year">Select Year:</label>
+                            <select name="year" id="year" class="form-control">
+                                <?php
+                                for ($i = 2020; $i <= date('Y'); $i++) {
+                                    echo "<option value='$i'" . ($i == $selectedYear ? ' selected' : '') . ">$i</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="month">Select Month:</label>
-                        <select name="month" id="month" class="form-control">
-                            <?php
-                            for ($i = 1; $i <= 12; $i++) {
-                                $monthNum = str_pad($i, 2, '0', STR_PAD_LEFT);
-                                $monthName = date('F', mktime(0, 0, 0, $i, 10));
-                                echo "<option value='$monthNum'" . ($monthNum == $selectedMonth ? ' selected' : '') . ">$monthName</option>";
-                            }
-                            ?>
-                        </select>
-                    </div>
-
-                    <div class="d-flex justify-content-between">
+                        <div class="form-group flex-fill">
+                            <label for="month">Select Month:</label>
+                            <select name="month" id="month" class="form-control">
+                                <?php
+                                for ($i = 1; $i <= 12; $i++) {
+                                    $monthNum = str_pad($i, 2, '0', STR_PAD_LEFT);
+                                    $monthName = date('F', mktime(0, 0, 0, $i, 10));
+                                    echo "<option value='$monthNum'" . ($monthNum == $selectedMonth ? ' selected' : '') . ">$monthName</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
                         <button type="submit" class="btn btn-primary" name="action" value="filter">Filter</button>
-                        <button type="submit" formaction="../charts/generate_pdf.php" class="btn btn-secondary" name="action" value="download">Download PDF report</button>
+
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" formaction="../charts/generate_pdf.php" class="btn btn-secondary w-100" name="action" value="download">Download PDF report</button>
                     </div>
                 </form>
             </div>
