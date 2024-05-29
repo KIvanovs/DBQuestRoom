@@ -1,6 +1,8 @@
 <?php
 session_start();
 include '../includes/dbcon.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
@@ -44,6 +46,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $card_query = "INSERT INTO card (cardDate, cardNumber, cardName, user_id) VALUES
                        ('$cardDate', '$cardNumber', '$cardName', '$user_id')";
         mysqli_query($conn, $card_query);
+    }
+
+
+    // Fetch user details
+    $user_query = "SELECT name, surname, email FROM users WHERE id='$user_id'";
+    $user_result = mysqli_query($conn, $user_query);
+    $user_row = mysqli_fetch_assoc($user_result);
+
+    // Fetch quest room and address details using JOIN
+    $quest_query = "
+        SELECT q.name AS quest_name, a.buildingAdress AS quest_address 
+        FROM quests q
+        JOIN adress a ON q.adress_id = a.id
+        WHERE q.id='$room_id'";
+    $quest_result = mysqli_query($conn, $quest_query);
+    $quest_row = mysqli_fetch_assoc($quest_result);
+
+    $user_name = $user_row['name'];
+    $user_surname = $user_row['surname'];
+    $user_email = $user_row['email'];
+    $quest_name = $quest_row['quest_name'];
+    $quest_address = $quest_row['quest_address'];
+
+    // Send confirmation email
+    require '../vendor/autoload.php';
+
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'kirillquestroom@gmail.com'; // SMTP username
+        $mail->Password = 'tdiscwhdffittzmz';        // SMTP password
+        $mail->SMTPSecure = 'tls';
+        $mail->Port = 587;
+
+        $mail->setFrom('kirillquestroom@gmail.com', 'KirillQuestRoom');
+        $mail->addAddress($user_email, $user_name); // Add a recipient
+
+        $mail->isHTML(true); // Set email format to HTML
+        $mail->Subject = 'Reservation Successful';
+        $mail->Body    = "Hello, $user_name $user_surname!<br><br>
+                          Your reservation has been successfully made for the escape room \"$quest_name\" 
+                          at $time on $date, located at: $quest_address.<br><br>
+                          Best regards, Team Kirill Quest Room.";
+
+        $mail->send();
+        echo 'Message has been sent';
+    } catch (Exception $e) {
+        echo 'Message could not be sent. Mailer Error: ', $mail->ErrorInfo;
     }
 
     echo "Reservation saved successfully!";
