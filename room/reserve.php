@@ -1,8 +1,11 @@
 <?php
 session_start();
 include '../includes/dbcon.php';
+require '../vendor/autoload.php'; // Ensure this is the correct path to the autoload file
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use Mpdf\Mpdf;
 
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
@@ -33,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Insert reservation into the database
     $insert_query = "INSERT INTO reservation (date, time, cost, payment, room_id, client_id, creation_date)
-             VALUES ('$date', '$time', '$cost', '$payment', '$room_id', '$user_id', CURDATE())";
+                     VALUES ('$date', '$time', '$cost', '$payment', '$room_id', '$user_id', CURDATE())";
     mysqli_query($conn, $insert_query);
 
     // Check if save card information is checked and save the card details
@@ -47,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                        ('$cardDate', '$cardNumber', '$cardName', '$user_id')";
         mysqli_query($conn, $card_query);
     }
-
 
     // Fetch user details
     $user_query = "SELECT name, surname, email FROM users WHERE id='$user_id'";
@@ -69,9 +71,127 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $quest_name = $quest_row['quest_name'];
     $quest_address = $quest_row['quest_address'];
 
-    // Send confirmation email
-    require '../vendor/autoload.php';
+    // Ensure the receipts directory exists
+    $receipts_dir = '../receipts/';
+    if (!is_dir($receipts_dir)) {
+        mkdir($receipts_dir, 0777, true);
+    }
 
+    // Generate PDF receipt using MPDF
+    $mpdf = new Mpdf();
+    $receipt_content = "
+        <style>
+            body { font-family: Arial, sans-serif; }
+            .invoice-box { max-width: 800px; margin: auto; padding: 30px; border: 1px solid #eee; box-shadow: 0 0 10px rgba(0, 0, 0, 0.15); }
+            .invoice-box table { width: 100%; line-height: inherit; text-align: left; border-collapse: collapse; }
+            .invoice-box table td { padding: 5px; vertical-align: top; }
+            .invoice-box table tr td:nth-child(2) { text-align: right; }
+            .invoice-box table tr.top table td { padding-bottom: 20px; }
+            .invoice-box table tr.top table td.title { font-size: 45px; line-height: 45px; color: #333; }
+            .invoice-box table tr.information table td { padding-bottom: 40px; }
+            .invoice-box table tr.heading td { background: #eee; border-bottom: 1px solid #ddd; font-weight: bold; }
+            .invoice-box table tr.details td { padding-bottom: 20px; }
+            .invoice-box table tr.item td { border-bottom: 1px solid #eee; }
+            .invoice-box table tr.item.last td { border-bottom: none; }
+            .invoice-box table tr.total td:nth-child(2) { border-top: 2px solid #eee; font-weight: bold; }
+        </style>
+        <div class='invoice-box'>
+            <table cellpadding='0' cellspacing='0'>
+                <tr class='top'>
+                    <td colspan='2'>
+                        <table>
+                            <tr>
+                                <td class='title'>
+                                    <img src='../images/logo.png' style='width:100%; max-width:300px;'>
+                                </td>
+                                <td>
+                                    Invoice #: " . uniqid() . "<br>
+                                    Created: " . date('Y-m-d') . "<br>
+                                    Due: " . date('Y-m-d', strtotime('+30 days')) . "
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr class='information'>
+                    <td colspan='2'>
+                        <table>
+                            <tr>
+                                <td>
+                                    Kirill Quest Room<br>
+                                    1234 Main St<br>
+                                    Anytown, CA 12345
+                                </td>
+                                <td>
+                                    $user_name $user_surname<br>
+                                    $user_email
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr class='heading'>
+                    <td>
+                        Payment Method
+                    </td>
+                    <td>
+                        $payment
+                    </td>
+                </tr>
+                <tr class='details'>
+                    <td>
+                        Payment Method
+                    </td>
+                    <td>
+                        $payment
+                    </td>
+                </tr>
+                <tr class='heading'>
+                    <td>
+                        Item
+                    </td>
+                    <td>
+                        Price
+                    </td>
+                </tr>
+                <tr class='item'>
+                    <td>
+                        Quest Room Reservation - $quest_name
+                    </td>
+                    <td>
+                        $$cost
+                    </td>
+                </tr>
+                <tr class='item'>
+                    <td>
+                        Date and Time
+                    </td>
+                    <td>
+                        $date at $time
+                    </td>
+                </tr>
+                <tr class='item last'>
+                    <td>
+                        Location
+                    </td>
+                    <td>
+                        $quest_address
+                    </td>
+                </tr>
+                <tr class='total'>
+                    <td></td>
+                    <td>
+                        Total: $$cost
+                    </td>
+                </tr>
+            </table>
+        </div>
+    ";
+    $mpdf->WriteHTML($receipt_content);
+    $pdf_path = $receipts_dir . uniqid('receipt_', true) . '.pdf';
+    $mpdf->Output($pdf_path, 'F'); // Save PDF to a file
+
+    // Send confirmation email with PDF attachment
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
@@ -90,7 +210,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mail->Body    = "Hello, $user_name $user_surname!<br><br>
                           Your reservation has been successfully made for the escape room \"$quest_name\" 
                           at $time on $date, located at: $quest_address.<br><br>
+                          Please find your official invoice attached.<br><br>
                           Best regards, Team Kirill Quest Room.";
+        
+        // Attach PDF
+        $mail->addAttachment($pdf_path);
 
         $mail->send();
         echo 'Message has been sent';
