@@ -77,6 +77,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
 .pika-select-year {
     display: none;
 }
+#card-element {
+    width: 100%;
+    max-width: 500px; /* Устанавливает максимальную ширину */
+    height: 60px; /* Увеличивает высоту */
+    padding: 10px; /* Добавляет внутренние отступы */
+    border: 1px solid #ccc; /* Добавляет границу */
+    border-radius: 4px; /* Добавляет скругленные углы */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Добавляет тень */
+}
 
 </style>
 
@@ -91,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             <p class="card-text" style="font-size: 1.1em;">Age limit: <strong><?php echo $ageLimit; ?></strong> +</p>
             <p class="card-text" style="font-size: 1.1em;">Description: <strong><?php echo $description; ?></strong></p>
 
-            <form action="../room/reserve.php" method="post">
+            <form action="../room/reserve.php" method="post" id="payment-form">
                 <h3 style="margin-top: 20px;">Reservation</h3>
                 <input type="hidden" name="quest_id" value="<?php echo $quest_id; ?>">
                 <input type="hidden" name="discount" value="<?php echo $discount; ?>">
@@ -281,24 +290,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                         ?>
                         
 
-                        <div id="card_details" style="display: none;">
-                            <div class="form-group">
-                                <label for="cardDate">Card Expiry Date:</label>
-                                <input type="text" id="cardDate" name="cardDate" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="cardNumber">Card Number:</label>
-                                <input type="text" id="cardNumber" name="cardNumber" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="cardName">Cardholder Name:</label>
-                                <input type="text" id="cardName" name="cardName" class="form-control">
-                            </div>
-                            <div class="form-check mb-2">
-                                <input type="checkbox" id="save_card_info" name="save_card_info" class="form-check-input">
-                                <label for="save_card_info" class="form-check-label">Save card information for future use</label>
-                            </div>
-                        </div>
+                        <div id="card-element"><!-- Stripe.js injects the Card Element --></div>
+                        <div id="card-errors" role="alert"></div>
 
                         <!-- HTML part for displaying the cards if available -->
                         <?php if ($hasSavedCards): ?>
@@ -324,6 +317,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                         <button type="submit" id="reserve-button" class="btn btn-primary" disabled>Reserve</button>
                     </div>
                 </div>
+                <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var stripe = Stripe('public_API_KEY');
+                    var elements = stripe.elements();
+                    var card = elements.create('card');
+                    card.mount('#card-element');
+
+                    card.addEventListener('change', function(event) {
+                        var displayError = document.getElementById('card-errors');
+                        if (event.error) {
+                            displayError.textContent = event.error.message;
+                        } else {
+                            displayError.textContent = '';
+                        }
+                    });
+
+                    var form = document.getElementById('payment-form');
+                    form.addEventListener('submit', function(event) {
+                        event.preventDefault();
+                        stripe.createToken(card).then(function(result) {
+                            if (result.error) {
+                                var errorElement = document.getElementById('card-errors');
+                                errorElement.textContent = result.error.message;
+                            } else {
+                                stripeTokenHandler(result.token);
+                            }
+                        });
+                    });
+
+                    function stripeTokenHandler(token) {
+                        var form = document.getElementById('payment-form');
+                        var hiddenInput = document.createElement('input');
+                        hiddenInput.setAttribute('type', 'hidden');
+                        hiddenInput.setAttribute('name', 'stripeToken');
+                        hiddenInput.setAttribute('value', token.id);
+                        form.appendChild(hiddenInput);
+                        form.submit();
+                    }
+                });
+                </script>
                 <script>
 
                         document.addEventListener('DOMContentLoaded', function () {

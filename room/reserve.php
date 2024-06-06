@@ -6,6 +6,8 @@ require '../vendor/autoload.php'; // Ensure this is the correct path to the auto
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use Mpdf\Mpdf;
+use Stripe\Stripe;
+use Stripe\Charge;
 
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
@@ -13,6 +15,17 @@ if (!$conn) {
 
 if (!isset($_SESSION['user_id'])) {
     die("Please <a href='../register_login/loginform.php'>log in as user</a> to make a reservation. " . mysqli_connect_error());
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $stripeToken = isset($_POST['stripeToken']) ? $_POST['stripeToken'] : null;
+
+    if (!$stripeToken) {
+        echo "Payment failed: Must provide source or customer.";
+        exit;
+    }
+
+    // Your existing code to handle the reservation and payment
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -23,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $payment = $_POST['payment_method'];
     $cost = $_POST['cost'];
     $user_id = $_SESSION['user_id'];
+    $stripeToken = $_POST['stripeToken']; // Fetch the stripeToken from POST data
 
     // Check if a reservation already exists for the given date and time
     $query = "SELECT * FROM reservation WHERE room_id='$room_id' AND date='$date' AND time='$time'";
@@ -33,6 +47,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "<a href='../room/quest_list.php'>Back to home page</a>";
         exit();
     }
+
+    if ($payment === 'card') {
+        // Set your secret key. Remember to switch to your live secret key in production!
+        // See your keys here: https://dashboard.stripe.com/apikeys
+        Stripe::setApiKey('secret_API_KEY');
+
+        try {
+            $charge = Charge::create([
+                'amount' => 50, // amount in cents
+                'currency' => 'eur',
+                'description' => 'Quest Room Reservation',
+                'source' => $stripeToken,
+            ]);
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            echo 'Payment failed: ' . $e->getMessage();
+            exit();
+        }
+    }
+
+    
 
     // Insert reservation into the database
     $insert_query = "INSERT INTO reservation (date, time, cost, payment, room_id, client_id, creation_date)
