@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <style>
             body { font-family: Arial, sans-serif; }
             .invoice-box { max-width: 800px; margin: auto; padding: 30px; border: 1px solid #eee; box-shadow: 0 0 10px rgba(0, 0, 0, 0.15); }
-            .invoice-box table { width: 100%; line-height: inherit; text-align: left; }
+            .invoice-box table { width: 100%; line-height: inherit; text-align: left;  border-collapse: collapse; }
             .invoice-box table td { padding: 5px; vertical-align: top; }
             .invoice-box table tr td:nth-child(2) { text-align: right; }
             .invoice-box table tr.top table td { padding-bottom: 20px; }
@@ -136,7 +136,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <h2>Quest Room Reservation</h2>
                                 </td>
                                 <td>
-                                    <strong>Reservation Date:</strong> " . date('Y-m-d') . "<br>
+                                    Invoice #: " . uniqid() . "<br>
+                                    Created: " . date('Y-m-d') . "<br>
+                                    Due: " . date('Y-m-d', strtotime('+30 days')) . "
                                 </td>
                             </tr>
                         </table>
@@ -147,53 +149,104 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <table>
                             <tr>
                                 <td>
-                                    <strong>User:</strong> $user_name $user_surname<br>
-                                    <strong>Email:</strong> $user_email
+                                    Kirill Quest Room<br>
+                                    1234 Main St<br>
+                                    Anytown, CA 12345
                                 </td>
                                 <td>
-                                    <strong>Quest Room:</strong> $quest_name<br>
-                                    <strong>Address:</strong> $quest_address<br>
-                                    <strong>Reservation Date:</strong> $date<br>
-                                    <strong>Time:</strong> $time
+                                    $user_name $user_surname<br>
+                                    $user_email
                                 </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
                 <tr class='heading'>
-                    <td>Payment Method</td>
-                    <td>Cost</td>
+                <td>
+                    Payment Method
+                </td>
+                <td>
+                    $payment
+                </td>
                 </tr>
                 <tr class='details'>
-                    <td>$payment</td>
-                    <td>$cost EUR</td>
+                    <td>
+                        Payment Method
+                    </td>
+                    <td>
+                        $payment
+                    </td>
+                </tr>
+                <tr class='heading'>
+                    <td>
+                        Item
+                    </td>
+                    <td>
+                        Price
+                    </td>
+                </tr>
+                <tr class='item'>
+                    <td>
+                        Quest Room Reservation - $quest_name
+                    </td>
+                    <td>
+                        $$cost
+                    </td>
+                </tr>
+                <tr class='item'>
+                    <td>
+                        Date and Time
+                    </td>
+                    <td>
+                        $date at $time
+                    </td>
+                </tr>
+                <tr class='item last'>
+                    <td>
+                        Location
+                    </td>
+                    <td>
+                        $quest_address
+                    </td>
+                </tr>
+                <tr class='total'>
+                <td></td>
+                <td>
+                    Total: $$cost
+                </td>
                 </tr>
             </table>
         </div>
     ";
 
     $mpdf->WriteHTML($receipt_content);
-    $receipt_filename = $receipts_dir . "receipt_" . $user_id . "_" . date('Ymd_His') . ".pdf";
-    $mpdf->Output($receipt_filename, \Mpdf\Output\Destination::FILE);
+    $pdf_path = $receipts_dir . uniqid('receipt_', true) . '.pdf';
+    $mpdf->Output($pdf_path, 'F'); // Save PDF to a file
 
     // Send email with receipt as attachment using PHPMailer
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
-        $mail->Host = 'smtp.example.com';
+        $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'your_email@example.com';
-        $mail->Password = 'your_password';
+        $mail->Username = 'kirillquestroom@gmail.com';
+        $mail->Password = 'tdiscwhdffittzmz';
         $mail->SMTPSecure = 'tls';
         $mail->Port = 587;
 
-        $mail->setFrom('your_email@example.com', 'Quest Room');
-        $mail->addAddress($user_email, "$user_name $user_surname");
+        $mail->setFrom('kirillquestroom@gmail.com', 'KirillQuestRoom');
+        $mail->addAddress($user_email, $user_name);
 
-        $mail->isHTML(true);
-        $mail->Subject = 'Reservation Confirmation';
-        $mail->Body    = 'Thank you for your reservation. Please find the attached receipt.';
-        $mail->addAttachment($receipt_filename);
+        $mail->isHTML(true); // Set email format to HTML
+        $mail->Subject = 'Reservation Successful';
+        $mail->Body    = "Hello, $user_name $user_surname!<br><br>
+                          Your reservation has been successfully made for the escape room \"$quest_name\" 
+                          at $time on $date, located at: $quest_address.<br><br>
+                          Please find your official invoice attached.<br><br>
+                          Best regards, Team Kirill Quest Room.";
+
+        // Attach PDF
+        $mail->addAttachment($pdf_path);
 
         $mail->send();
         echo 'Reservation successful. Confirmation email sent.';
