@@ -292,6 +292,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
 
                         <div id="card-element"><!-- Stripe.js injects the Card Element --></div>
                         <div id="card-errors" role="alert"></div>
+                        <div class="save-card">
+                            <input type="checkbox" id="save-card" name="save-card">
+                            <label for="save-card">Сохранить данные карты для будущего использования</label>
+                        </div>
+
+                        <input type="hidden" name="cardDate" id="cardDate">
+                        <input type="hidden" name="cardNumber" id="cardNumber">
+                        <input type="hidden" name="cardName" id="cardName">
 
                         <!-- HTML part for displaying the cards if available -->
                         <?php if ($hasSavedCards): ?>
@@ -319,7 +327,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                 </div>
                 <script>
                 document.addEventListener('DOMContentLoaded', function () {
-                    var stripe = Stripe('public_API_KEY');
+                    var stripe = Stripe('your_public_key'); //your_public_key
                     var elements = stripe.elements();
                     var card = elements.create('card');
                     card.mount('#card-element');
@@ -348,11 +356,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
 
                     function stripeTokenHandler(token) {
                         var form = document.getElementById('payment-form');
+
+                        // Сохранение данных карты в скрытых полях
+                        if (document.getElementById('save-card').checked) {
+                            // Предполагая, что у нас есть полный номер карты
+                            document.getElementById('cardDate').value = token.card.exp_month + '/' + token.card.exp_year;
+                            document.getElementById('cardNumber').value = token.card.id;  // В реальном проекте здесь должен быть токен карты, а не полные данные
+                            document.getElementById('cardName').value = token.card.name;
+                        }
+
                         var hiddenInput = document.createElement('input');
                         hiddenInput.setAttribute('type', 'hidden');
                         hiddenInput.setAttribute('name', 'stripeToken');
                         hiddenInput.setAttribute('value', token.id);
                         form.appendChild(hiddenInput);
+
                         form.submit();
                     }
                 });

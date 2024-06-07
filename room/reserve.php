@@ -25,10 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
-    // Your existing code to handle the reservation and payment
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $room_id = $_POST['quest_id'];
     $date = $_POST['date'];
     $time = $_POST['time'];
@@ -36,7 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $payment = $_POST['payment_method'];
     $cost = $_POST['cost'];
     $user_id = $_SESSION['user_id'];
-    $stripeToken = $_POST['stripeToken']; // Fetch the stripeToken from POST data
 
     // Check if a reservation already exists for the given date and time
     $query = "SELECT * FROM reservation WHERE room_id='$room_id' AND date='$date' AND time='$time'";
@@ -50,8 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($payment === 'card') {
         // Set your secret key. Remember to switch to your live secret key in production!
-        // See your keys here: https://dashboard.stripe.com/apikeys
-        Stripe::setApiKey('secret_API_KEY');
+        Stripe::setApiKey('your_secret_key'); // замените 'your_secret_key' на ваш секретный ключ
 
         try {
             $charge = Charge::create([
@@ -66,24 +60,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    
-
     // Insert reservation into the database
     $insert_query = "INSERT INTO reservation (date, time, cost, payment, room_id, client_id, creation_date)
                      VALUES ('$date', '$time', '$cost', '$payment', '$room_id', '$user_id', CURDATE())";
     mysqli_query($conn, $insert_query);
 
     // Check if save card information is checked and save the card details
-    if (isset($_POST['save_card_info']) && $_POST['save_card_info'] === 'on') {
+    if (isset($_POST['save-card']) && $_POST['save-card'] === 'on') {
         $cardDate = $_POST['cardDate'];
         $cardNumber = $_POST['cardNumber'];
         $cardName = $_POST['cardName'];
-
-        // Insert card information with user_id into the card table
-        $card_query = "INSERT INTO card (cardDate, cardNumber, cardName, user_id) VALUES
-                       ('$cardDate', '$cardNumber', '$cardName', '$user_id')";
+    
+        // Обработать форматирование данных карты перед вставкой в БД
+        $cardDate = mysqli_real_escape_string($conn, $cardDate);
+        $cardNumber = mysqli_real_escape_string($conn, $cardNumber);
+        $cardName = mysqli_real_escape_string($conn, $cardName);
+        $cardDate = date('m/y', strtotime($cardDate));
+    
+        // Вставить данные карты в таблицу
+        $card_query = "INSERT INTO card (cardDate, cardNumber, cardName, user_id) VALUES ('$cardDate', '$cardNumber', '$cardName', '$user_id')";
         mysqli_query($conn, $card_query);
     }
+    
 
     // Fetch user details
     $user_query = "SELECT name, surname, email FROM users WHERE id='$user_id'";
@@ -117,11 +115,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <style>
             body { font-family: Arial, sans-serif; }
             .invoice-box { max-width: 800px; margin: auto; padding: 30px; border: 1px solid #eee; box-shadow: 0 0 10px rgba(0, 0, 0, 0.15); }
-            .invoice-box table { width: 100%; line-height: inherit; text-align: left; border-collapse: collapse; }
+            .invoice-box table { width: 100%; line-height: inherit; text-align: left; }
             .invoice-box table td { padding: 5px; vertical-align: top; }
             .invoice-box table tr td:nth-child(2) { text-align: right; }
             .invoice-box table tr.top table td { padding-bottom: 20px; }
-            .invoice-box table tr.top table td.title { font-size: 45px; line-height: 45px; color: #333; }
             .invoice-box table tr.information table td { padding-bottom: 40px; }
             .invoice-box table tr.heading td { background: #eee; border-bottom: 1px solid #ddd; font-weight: bold; }
             .invoice-box table tr.details td { padding-bottom: 20px; }
@@ -136,12 +133,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <table>
                             <tr>
                                 <td class='title'>
-                                    <img src='../images/logo.png' style='width:100%; max-width:300px;'>
+                                    <h2>Quest Room Reservation</h2>
                                 </td>
                                 <td>
-                                    Invoice #: " . uniqid() . "<br>
-                                    Created: " . date('Y-m-d') . "<br>
-                                    Due: " . date('Y-m-d', strtotime('+30 days')) . "
+                                    <strong>Reservation Date:</strong> " . date('Y-m-d') . "<br>
                                 </td>
                             </tr>
                         </table>
@@ -152,113 +147,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <table>
                             <tr>
                                 <td>
-                                    Kirill Quest Room<br>
-                                    1234 Main St<br>
-                                    Anytown, CA 12345
+                                    <strong>User:</strong> $user_name $user_surname<br>
+                                    <strong>Email:</strong> $user_email
                                 </td>
                                 <td>
-                                    $user_name $user_surname<br>
-                                    $user_email
+                                    <strong>Quest Room:</strong> $quest_name<br>
+                                    <strong>Address:</strong> $quest_address<br>
+                                    <strong>Reservation Date:</strong> $date<br>
+                                    <strong>Time:</strong> $time
                                 </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
                 <tr class='heading'>
-                    <td>
-                        Payment Method
-                    </td>
-                    <td>
-                        $payment
-                    </td>
+                    <td>Payment Method</td>
+                    <td>Cost</td>
                 </tr>
                 <tr class='details'>
-                    <td>
-                        Payment Method
-                    </td>
-                    <td>
-                        $payment
-                    </td>
-                </tr>
-                <tr class='heading'>
-                    <td>
-                        Item
-                    </td>
-                    <td>
-                        Price
-                    </td>
-                </tr>
-                <tr class='item'>
-                    <td>
-                        Quest Room Reservation - $quest_name
-                    </td>
-                    <td>
-                        $$cost
-                    </td>
-                </tr>
-                <tr class='item'>
-                    <td>
-                        Date and Time
-                    </td>
-                    <td>
-                        $date at $time
-                    </td>
-                </tr>
-                <tr class='item last'>
-                    <td>
-                        Location
-                    </td>
-                    <td>
-                        $quest_address
-                    </td>
-                </tr>
-                <tr class='total'>
-                    <td></td>
-                    <td>
-                        Total: $$cost
-                    </td>
+                    <td>$payment</td>
+                    <td>$cost EUR</td>
                 </tr>
             </table>
         </div>
     ";
-    $mpdf->WriteHTML($receipt_content);
-    $pdf_path = $receipts_dir . uniqid('receipt_', true) . '.pdf';
-    $mpdf->Output($pdf_path, 'F'); // Save PDF to a file
 
-    // Send confirmation email with PDF attachment
+    $mpdf->WriteHTML($receipt_content);
+    $receipt_filename = $receipts_dir . "receipt_" . $user_id . "_" . date('Ymd_His') . ".pdf";
+    $mpdf->Output($receipt_filename, \Mpdf\Output\Destination::FILE);
+
+    // Send email with receipt as attachment using PHPMailer
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';
+        $mail->Host = 'smtp.example.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'kirillquestroom@gmail.com'; // SMTP username
-        $mail->Password = 'tdiscwhdffittzmz';        // SMTP password
+        $mail->Username = 'your_email@example.com';
+        $mail->Password = 'your_password';
         $mail->SMTPSecure = 'tls';
         $mail->Port = 587;
 
-        $mail->setFrom('kirillquestroom@gmail.com', 'KirillQuestRoom');
-        $mail->addAddress($user_email, $user_name); // Add a recipient
+        $mail->setFrom('your_email@example.com', 'Quest Room');
+        $mail->addAddress($user_email, "$user_name $user_surname");
 
-        $mail->isHTML(true); // Set email format to HTML
-        $mail->Subject = 'Reservation Successful';
-        $mail->Body    = "Hello, $user_name $user_surname!<br><br>
-                          Your reservation has been successfully made for the escape room \"$quest_name\" 
-                          at $time on $date, located at: $quest_address.<br><br>
-                          Please find your official invoice attached.<br><br>
-                          Best regards, Team Kirill Quest Room.";
-        
-        // Attach PDF
-        $mail->addAttachment($pdf_path);
+        $mail->isHTML(true);
+        $mail->Subject = 'Reservation Confirmation';
+        $mail->Body    = 'Thank you for your reservation. Please find the attached receipt.';
+        $mail->addAttachment($receipt_filename);
 
         $mail->send();
-        echo 'Message has been sent';
+        echo 'Reservation successful. Confirmation email sent.';
     } catch (Exception $e) {
-        echo 'Message could not be sent. Mailer Error: ', $mail->ErrorInfo;
+        echo "Reservation successful, but email could not be sent. Mailer Error: {$mail->ErrorInfo}";
     }
 
-    echo "Reservation saved successfully!";
-    echo "<p><a href='../room/quest_list.php'>Back to home page</a></p>";
+    // Redirect to the home page or confirmation page
+    header('Location: ../room/quest_list.php');
+    exit();
+} else {
+    echo "Invalid request method.";
 }
-
-mysqli_close($conn);
 ?>
