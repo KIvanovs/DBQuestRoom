@@ -18,13 +18,6 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $stripeToken = isset($_POST['stripeToken']) ? $_POST['stripeToken'] : null;
-
-    if (!$stripeToken) {
-        echo "Payment failed: Must provide source or customer.";
-        exit;
-    }
-
     $room_id = $_POST['quest_id'];
     $date = $_POST['date'];
     $time = $_POST['time'];
@@ -44,18 +37,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if ($payment === 'card') {
+        $stripeToken = isset($_POST['stripeToken']) ? $_POST['stripeToken'] : null;
+
+        if (!$stripeToken) {
+            echo "Payment failed: Must provide source or customer.";
+            exit;
+        }
+
         // Set your secret key. Remember to switch to your live secret key in production!
         Stripe::setApiKey('your_secret_key'); // замените 'your_secret_key' на ваш секретный ключ
 
         try {
             $charge = Charge::create([
-                'amount' => 50, // amount in cents
+                'amount' => $cost * 100, // Stripe принимает суммы в центах
                 'currency' => 'eur',
-                'description' => 'Quest Room Reservation',
+                'description' => 'Payment for reservation',
                 'source' => $stripeToken,
             ]);
-        } catch (\Stripe\Exception\ApiErrorException $e) {
-            echo 'Payment failed: ' . $e->getMessage();
+
+            // Save card details if checkbox is checked
+            if (isset($_POST['save-card']) && $_POST['save-card'] == 'on') {
+                $cardDate = $_POST['cardDate'];
+                $cardNumber = $_POST['cardNumber'];
+                $cardName = $_POST['cardName'];
+
+                $stmt = $conn->prepare("INSERT INTO card (user_id, cardDate, cardNumber, cardName) VALUES (?, ?, ?, ?)");
+                $stmt->bind_param("isss", $user_id, $cardDate, $cardNumber, $cardName);
+                $stmt->execute();
+                $stmt->close();
+            }
+
+        } catch (\Stripe\Exception\CardException $e) {
+            echo 'Payment failed: ' . $e->getError()->message;
             exit();
         }
     }
@@ -64,23 +77,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $insert_query = "INSERT INTO reservation (date, time, cost, payment, room_id, client_id, creation_date)
                      VALUES ('$date', '$time', '$cost', '$payment', '$room_id', '$user_id', CURDATE())";
     mysqli_query($conn, $insert_query);
-
-    // Check if save card information is checked and save the card details
-    if (isset($_POST['save-card']) && $_POST['save-card'] === 'on') {
-        $cardDate = $_POST['cardDate'];
-        $cardNumber = $_POST['cardNumber'];
-        $cardName = $_POST['cardName'];
-    
-        // Обработать форматирование данных карты перед вставкой в БД
-        $cardDate = mysqli_real_escape_string($conn, $cardDate);
-        $cardNumber = mysqli_real_escape_string($conn, $cardNumber);
-        $cardName = mysqli_real_escape_string($conn, $cardName);
-        $cardDate = date('m/y', strtotime($cardDate));
-    
-        // Вставить данные карты в таблицу
-        $card_query = "INSERT INTO card (cardDate, cardNumber, cardName, user_id) VALUES ('$cardDate', '$cardNumber', '$cardName', '$user_id')";
-        mysqli_query($conn, $card_query);
-    }
     
 
     // Fetch user details

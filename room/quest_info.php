@@ -266,134 +266,96 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                                 <option value="card">Card</option>
                             </select>
                         </div>
-                        <?php
-                        include '../includes/dbcon.php';
                         
-                        if (!isset($_SESSION['user_id'])) {
-                            error_log('User ID is not set in the session.');
-                            $userId = 'default_value'; // или какое-то безопасное значение по умолчанию
-                        } else {
-                            $userId = $_SESSION['user_id'];
-                        }
-
-                        $sql = "SELECT cardDate, cardNumber, cardName FROM card WHERE user_id = ?";
-                        $stmt = mysqli_prepare($conn, $sql);
-                        mysqli_stmt_bind_param($stmt, 'i', $userId);
-                        mysqli_stmt_execute($stmt);
-                        $result = mysqli_stmt_get_result($stmt);
-                        
-                        $cards = mysqli_fetch_all($result, MYSQLI_ASSOC);
-                        $hasSavedCards = count($cards) > 0;
-                        
-                        mysqli_free_result($result);
-                        mysqli_close($conn);
-                        ?>
-                        
-
-                        <div id="card-element"><!-- Stripe.js injects the Card Element --></div>
-                        <div id="card-errors" role="alert"></div>
-                        <div class="save-card">
-                            <input type="checkbox" id="save-card" name="save-card">
-                            <label for="save-card">Сохранить данные карты для будущего использования</label>
+                        <div id="card-details" style="display: none;">
+                                <div id="card-element"><!-- Stripe.js injects the Card Element --></div>
+                                <div id="card-errors" role="alert"></div>
+                                
                         </div>
-
-                        <input type="hidden" name="cardDate" id="cardDate">
-                        <input type="hidden" name="cardNumber" id="cardNumber">
-                        <input type="hidden" name="cardName" id="cardName">
-
-                        <!-- HTML part for displaying the cards if available -->
-                        <?php if ($hasSavedCards): ?>
-                            <div class="form-group">
-                                <label for="select_saved_card">Use a saved card:</label>
-                                <select id="select_saved_card" name="select_saved_card" class="form-control" onchange="toggleCardDetails(this)">
-                                <option value="">-- Select a saved card --</option>
-                                    <?php foreach ($cards as $card): ?>
-                                        <option value="<?= htmlspecialchars(json_encode([
-                                                'cardDate' => $card['cardDate'],
-                                                'cardNumber' => $card['cardNumber'],
-                                                'cardName' => $card['cardName']
-                                            ])) ?>">
-                                            <?= htmlspecialchars($card['cardName']) ?> (Expires: <?= htmlspecialchars($card['cardDate']) ?>)
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        <?php else: ?>
-                            <p>No saved cards available.</p>
-                        <?php endif; ?>
-
-                        <button type="submit" id="reserve-button" class="btn btn-primary" disabled>Reserve</button>
+                        
+                        <button id="reserve-button" class="btn btn-primary" disabled>Reserve</button>
                     </div>
                 </div>
                 <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    var stripe = Stripe('your_public_key'); //your_public_key
-                    var elements = stripe.elements();
-                    var card = elements.create('card');
-                    card.mount('#card-element');
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var stripe = Stripe('your_public_key'); //your_public_key
+                        var elements = stripe.elements();
+                        var card = elements.create('card');
+                        card.mount('#card-element');
 
-                    card.addEventListener('change', function(event) {
-                        var displayError = document.getElementById('card-errors');
-                        if (event.error) {
-                            displayError.textContent = event.error.message;
-                        } else {
-                            displayError.textContent = '';
-                        }
-                    });
-
-                    var form = document.getElementById('payment-form');
-                    form.addEventListener('submit', function(event) {
-                        event.preventDefault();
-                        stripe.createToken(card).then(function(result) {
-                            if (result.error) {
-                                var errorElement = document.getElementById('card-errors');
-                                errorElement.textContent = result.error.message;
+                        card.addEventListener('change', function(event) {
+                            var displayError = document.getElementById('card-errors');
+                            if (event.error) {
+                                displayError.textContent = event.error.message;
                             } else {
-                                stripeTokenHandler(result.token);
+                                displayError.textContent = '';
                             }
                         });
+
+                        var form = document.getElementById('payment-form');
+                            form.addEventListener('submit', function(event) {
+                                event.preventDefault();
+                                var paymentMethod = document.getElementById('payment-method').value;
+                                if (paymentMethod === 'card') {
+                                    stripe.createToken(card).then(function(result) {
+                                        if (result.error) {
+                                            var errorElement = document.getElementById('card-errors');
+                                            errorElement.textContent = result.error.message;
+                                        } else {
+                                            stripeTokenHandler(result.token);
+                                        }
+                                    });
+                                } else {
+                                    form.submit();
+                                }
+                            });
+
+                        function stripeTokenHandler(token) {
+                            var form = document.getElementById('payment-form');
+                            var hiddenInput = document.createElement('input');
+                            hiddenInput.setAttribute('type', 'hidden');
+                            hiddenInput.setAttribute('name', 'stripeToken');
+                            hiddenInput.setAttribute('value', token.id);
+                            form.appendChild(hiddenInput);
+                            form.submit();
+                        }
                     });
 
-                    function stripeTokenHandler(token) {
-                        var form = document.getElementById('payment-form');
+                    function togglePaymentMethod() {
+                        var paymentMethod = document.getElementById('payment-method').value;
+                        var cardDetailsDiv = document.getElementById('card-details');
 
-                        // Сохранение данных карты в скрытых полях
-                        if (document.getElementById('save-card').checked) {
-                            // Предполагая, что у нас есть полный номер карты
-                            document.getElementById('cardDate').value = token.card.exp_month + '/' + token.card.exp_year;
-                            document.getElementById('cardNumber').value = token.card.id;  // В реальном проекте здесь должен быть токен карты, а не полные данные
-                            document.getElementById('cardName').value = token.card.name;
+                        if (paymentMethod === 'card') {
+                            cardDetailsDiv.style.display = 'block';
+                        } else {
+                            cardDetailsDiv.style.display = 'none';
                         }
-
-                        var hiddenInput = document.createElement('input');
-                        hiddenInput.setAttribute('type', 'hidden');
-                        hiddenInput.setAttribute('name', 'stripeToken');
-                        hiddenInput.setAttribute('value', token.id);
-                        form.appendChild(hiddenInput);
-
-                        form.submit();
                     }
-                });
+
+                    togglePaymentMethod();
+
+                    document.addEventListener('DOMContentLoaded', function () {
+                        togglePaymentMethod();
+                    });
+
+                    document.getElementById('payment-method').addEventListener('change', function () {
+                        togglePaymentMethod();
+                    });
                 </script>
                 <script>
 
-                        document.addEventListener('DOMContentLoaded', function () {
-                            togglePaymentMethod(); // Ensure correct display when the page loads
-                        });
+                    function togglePaymentMethod() {
+                        var paymentMethod = document.getElementById('payment-method').value;
+                        var cardDetailsDiv = document.getElementById('card-details');
 
-                        function togglePaymentMethod() {
-                            var paymentMethod = document.getElementById('payment-method').value;
-                            var cardDetailsDiv = document.getElementById('card_details');
-                            var savedCardsDiv = document.getElementById('select_saved_card').parentNode;
-
-                            if (paymentMethod === 'card') {
-                                cardDetailsDiv.style.display = 'block';
-                                if (savedCardsDiv) savedCardsDiv.style.display = 'block';
-                            } else {
-                                cardDetailsDiv.style.display = 'none';
-                                if (savedCardsDiv) savedCardsDiv.style.display = 'none';
-                            }
+                        if (paymentMethod === 'card') {
+                            cardDetailsDiv.style.display = 'block';
+                        } else {
+                            cardDetailsDiv.style.display = 'none';
                         }
+                    }
+
+                        
 
                     document.getElementById('payment-method').addEventListener('change', function () {
                         var cardDetails = document.getElementById('card_details');
@@ -410,7 +372,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                     });
 
                     function toggleCardDetails(select) {
-                        var cardDetails = document.getElementById('card_details');
                         if (select.value) {
                             fillCardDetails(JSON.parse(select.value));
                         } else {
@@ -419,16 +380,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                     }
 
                     function fillCardDetails(card) {
-                        document.getElementById('cardDate').value = card.cardDate;
-                        document.getElementById('cardNumber').value = card.cardNumber;
-                        document.getElementById('cardName').value = card.cardName;
+                        document.getElementById('selected-card-name').textContent = card.cardName;
+                        document.getElementById('selected-card-number').textContent = '**** **** **** ' + card.cardNumber.slice(-4);
+                        document.getElementById('selected-card-date').textContent = card.cardDate;
+
+                        document.getElementById('selected-card-info').style.display = 'block';
                     }
 
                     function clearCardDetails() {
-                        document.getElementById('cardDate').value = '';
-                        document.getElementById('cardNumber').value = '';
-                        document.getElementById('cardName').value = '';
+                        document.getElementById('selected-card-name').textContent = '';
+                        document.getElementById('selected-card-number').textContent = '';
+                        document.getElementById('selected-card-date').textContent = '';
+
+                        document.getElementById('selected-card-info').style.display = 'none';
                     }
+
+                    document.addEventListener('DOMContentLoaded', function () {
+                        togglePaymentMethod();
+                    });
+
+
+                    document.getElementById('payment-method').addEventListener('change', function () {
+                        togglePaymentMethod();
+                    });
+
+                    document.getElementById('select_saved_card').addEventListener('change', function () {
+                        toggleCardDetails(this);
+                    });
+
+                    togglePaymentMethod(); 
                 </script>
             </form>
         </div>
