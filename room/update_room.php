@@ -1,5 +1,8 @@
 <?php
-session_start();
+$pageTitle = 'Quest Room update form';
+include_once '../includes/header.php';
+?>
+<?php
 // Check if the user is not an admin
 if (!isset($_SESSION['admin_id']) || empty($_SESSION['admin_id'])) {
     // Redirect the user to the admin login page
@@ -157,22 +160,51 @@ $result = mysqli_query($conn, $query);
 // Check if room was found
 if(mysqli_num_rows($result) == 1){
     $row = mysqli_fetch_assoc($result);
+        
+        ?>
 
-        // Display edit form
-        echo "<form method='post' action='' enctype='multipart/form-data'>";
-        echo "<p><label for='name'>Name:</label> <input type='text' name='name' value='" . $row['name'] . "'></p>";
-        echo "<p><label for='category'>Category:</label> <input type='text' name='category' value='" . $row['categoryName'] . "'></p>";
-        echo "<p><label for='address'>Address:</label> <input type='text' name='address' value='" . $row['buildingAdress'] . "'></p>";
-        echo "<p><label for='peopleAmount'>People Amount:</label> <input type='text' name='peopleAmount' value='" . $row['peopleAmount'] . "'></p>";
-        echo "<p><label for='ageLimit'>Age Limit:</label> <input type='text' name='ageLimit' value='" . $row['ageLimit'] . "'></p>";
-        echo "<p><label for='description'>Description:</label> <textarea name='description'>" . $row['description'] . "</textarea></p>";
-        echo "<p>Current photo path: " . $row['photoPath'] . "</p>";
-        echo "<img src='" . $row['photoPath'] . "' alt='Room photo' style='max-width: 200px; max-height: 200px;'>";
-        echo "<p><label for='photo'>Photo:</label> <input type='file' name='photo'></p>";
-        echo "<input type='hidden' name='photoPath' value='" . $row['photoPath'] . "'>";
-        echo "<input type='hidden' name='room_id' value='" . $row['ID'] . "'>";
-        echo "<p><input type='submit' name='update_room' value='Update'></p>";
-        echo "</form>";
+        <div class="container mt-5">
+        <h2>Edit Room</h2>
+        <form method="post" action="" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" class="form-control" name="name" value="<?php echo $row['name']; ?>">
+            </div>
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <input type="text" class="form-control" name="category" value="<?php echo $row['categoryName']; ?>">
+            </div>
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <input type="text" class="form-control" name="address" value="<?php echo $row['buildingAdress']; ?>">
+            </div>
+            <div class="form-group">
+                <label for="peopleAmount">People Amount:</label>
+                <input type="text" class="form-control" name="peopleAmount" value="<?php echo $row['peopleAmount']; ?>">
+            </div>
+            <div class="form-group">
+                <label for="ageLimit">Age Limit:</label>
+                <input type="text" class="form-control" name="ageLimit" value="<?php echo $row['ageLimit']; ?>">
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea class="form-control" name="description"><?php echo $row['description']; ?></textarea>
+            </div>
+            <div class="form-group">
+                <label>Current photo:</label><br>
+                <img src="<?php echo $row['photoPath']; ?>" alt="Room photo" style="max-width: 200px; max-height: 200px;">
+            </div>
+            <div class="form-group">
+                <label for="photo">New Photo:</label>
+                <input type="file" class="form-control-file" name="photo">
+            </div>
+            <input type="hidden" name="photoPath" value="<?php echo $row['photoPath']; ?>">
+            <input type="hidden" name="room_id" value="<?php echo $row['ID']; ?>">
+            <button type="submit" class="btn btn-primary" name="update_room">Update</button>
+        </form>
+    </div>
+   
+    <?php
     } else{
         echo "Room not found.";
     }

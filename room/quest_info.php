@@ -623,7 +623,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                     } else {
                         replyForm.style.display = 'none';
                     }
-                });
+                });F
             });
 
             var repliesButtons = document.querySelectorAll('.replies-btn');

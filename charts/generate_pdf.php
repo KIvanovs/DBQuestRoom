@@ -33,7 +33,6 @@ $html = '
 </head>
 <body>
     <div class="header">
-        <img src="path_to_your_logo.png" alt="Company Logo">
         <h1>Reservation Report</h1>
         <p>For the month of ' . $month . '/' . $year . '</p>
     </div>
