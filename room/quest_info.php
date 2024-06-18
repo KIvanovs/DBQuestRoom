@@ -20,8 +20,17 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
+// Ensure `quest_id` is set and is a valid number
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['ID'])) {
     $quest_id = mysqli_real_escape_string($conn, $_GET['ID']);
+} elseif (isset($_GET['quest_id']) && is_numeric($_GET['quest_id'])) {
+    $quest_id = intval($_GET['quest_id']);
+} else {
+    die("Invalid quest ID.");
+}
+
+// Fetch quest information
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($quest_id)) {
     $query = "SELECT q.ID, q.name, q.peopleAmount, q.description, q.photoPath,
               a.buildingAdress, 
               qc.ageLimit, qc.categoryName
@@ -445,14 +454,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
     </div>
     <?php
     
+    // Ensure `quest_id` is set and is a valid number
+    if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['ID'])) {
+        $quest_id = mysqli_real_escape_string($conn, $_GET['ID']);
+    } elseif (isset($_GET['quest_id']) && is_numeric($_GET['quest_id'])) {
+        $quest_id = intval($_GET['quest_id']);
+    } else {
+        die("Invalid quest ID.");
+    }
+    
+
+    $comments_per_page = 5; // Number of comments per page
+
+    // Calculate total number of comments
+    $total_comments_query = "
+        SELECT COUNT(*) as total_comments
+        FROM comment
+        WHERE quest_id='$quest_id'
+    ";
+    $total_comments_result = mysqli_query($conn, $total_comments_query);
+    $total_comments_row = mysqli_fetch_assoc($total_comments_result);
+    $total_comments = $total_comments_row['total_comments'];
+
+    $total_pages = ceil($total_comments / $comments_per_page);
+
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $offset = ($page - 1) * $comments_per_page;
+
     $comments_query = "
-    SELECT c.*, u.nickname, a.name AS admin_name
-    FROM comment c
-    LEFT JOIN users u ON c.user_id = u.ID
-    LEFT JOIN admin a ON c.admin_id = a.ID
-    WHERE c.quest_id='$quest_id'
-    ORDER BY c.ID DESC
-";
+        SELECT c.*, u.nickname, a.name AS admin_name
+        FROM comment c
+        LEFT JOIN users u ON c.user_id = u.ID
+        LEFT JOIN admin a ON c.admin_id = a.ID
+        WHERE c.quest_id='$quest_id'
+        ORDER BY c.ID DESC
+        LIMIT $offset, $comments_per_page
+    ";
 
     $comments_result = mysqli_query($conn, $comments_query);
     $comments = [];
@@ -564,6 +601,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
     display_comments($comments);
     echo "</div>";
 
+    // Display pagination
+    echo "<div class='pagination-container text-center mt-4'>";
+    if ($total_pages > 1) {
+        echo "<nav aria-label='Page navigation'>";
+        echo "<ul class='pagination justify-content-center'>";
+        
+        // Previous button
+        if ($page > 1) {
+            echo "<li class='page-item'><a class='page-link' href='?quest_id=$quest_id&page=" . ($page - 1) . "' aria-label='Previous'><span aria-hidden='true'>&laquo;</span></a></li>";
+        } else {
+            echo "<li class='page-item disabled'><span class='page-link' aria-label='Previous'><span aria-hidden='true'>&laquo;</span></span></li>";
+        }
+        
+        // Page numbers
+        $start = max(1, $page - 2);
+        $end = min($total_pages, $page + 2);
+        
+        if ($start > 1) {
+            echo "<li class='page-item'><a class='page-link' href='?quest_id=$quest_id&page=1'>1</a></li>";
+            if ($start > 2) {
+                echo "<li class='page-item disabled'><span class='page-link'>...</span></li>";
+            }
+        }
+        
+        for ($i = $start; $i <= $end; $i++) {
+            if ($i == $page) {
+                echo "<li class='page-item active'><span class='page-link'>$i</span></li>";
+            } else {
+                echo "<li class='page-item'><a class='page-link' href='?quest_id=$quest_id&page=$i'>$i</a></li>";
+            }
+        }
+        
+        if ($end < $total_pages) {
+            if ($end < $total_pages - 1) {
+                echo "<li class='page-item disabled'><span class='page-link'>...</span></li>";
+            }
+            echo "<li class='page-item'><a class='page-link' href='?quest_id=$quest_id&page=$total_pages'>$total_pages</a></li>";
+        }
+        
+        // Next button
+        if ($page < $total_pages) {
+            echo "<li class='page-item'><a class='page-link' href='?quest_id=$quest_id&page=" . ($page + 1) . "' aria-label='Next'><span aria-hidden='true'>&raquo;</span></a></li>";
+        } else {
+            echo "<li class='page-item disabled'><span class='page-link' aria-label='Next'><span aria-hidden='true'>&raquo;</span></span></li>";
+        }
+        
+        echo "</ul>";
+        echo "</nav>";
+    }
+    echo "</div>";
+
     mysqli_close($conn);
     ?>
     <script>
@@ -623,7 +711,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                     } else {
                         replyForm.style.display = 'none';
                     }
-                });F
+                });
             });
 
             var repliesButtons = document.querySelectorAll('.replies-btn');
@@ -638,6 +726,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
                     } else {
                         repliesDiv.style.display = 'none';
                     }
+                });
+            });
+
+                // Handle pagination button click
+            var paginationButtons = document.querySelectorAll('.pagination-btn');
+
+            paginationButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var page = this.getAttribute('data-page');
+                    window.location.href = "?quest_id=<?php echo $quest_id; ?>&page=" + page;
                 });
             });
         });
